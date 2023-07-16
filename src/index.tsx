@@ -87,6 +87,7 @@ const BaseHtml = ({ children }: elements.Children) => `
   <title>THE BETH STACK</title>
   <script src="https://unpkg.com/htmx.org@1.9.3"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/hyperscript.org@0.9.9"></script>
 </head>
 
 ${children}
@@ -132,6 +133,7 @@ function TodoForm() {
       class="flex flex-row space-x-3"
       hx-post="/todos"
       hx-swap="beforebegin"
+      _="on submit target.reset()"
     >
       <input type="text" name="content" class="border border-black" />
       <button type="submit">Add</button>

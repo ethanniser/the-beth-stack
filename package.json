@@ -1,8 +1,9 @@
 {
   "name": "the-beth-stack",
-  "module": "index.ts",
+  "module": "src/index.tsx",
   "type": "module",
   "devDependencies": {
+    "@flydotio/dockerfile": "latest",
     "bun-types": "latest",
     "drizzle-kit": "^0.19.6",
     "typed-html": "^3.0.1"

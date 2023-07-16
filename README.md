@@ -1,15 +1,41 @@
-# the-beth-stack
+# THE BETH STACK
 
-To install dependencies:
+_It may not be the BEST stack, but it is the BETH stack._
 
-```bash
-bun install
-```
+## [Bun](https://bun.sh/)
 
-To run:
+## [Elysia](https://elysiajs.com/)
 
-```bash
-bun run index.ts
-```
+## [Turso](https://turso.tech/)
 
-This project was created using `bun init` in bun v0.6.14. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+## [HTMX](https://htmx.org/)
+
+### VIEW THE LIVE DEMO AT [the-beth-stack.fly.dev](https://the-beth-stack.fly.dev/)
+
+## EACH STEP IN THE TUTORIAL IS [A BRANCH IN THIS REPO](https://github.com/ethanniser/the-beth-stack/branches)
+
+### SO YOU CAN SEE THE CODE AT EACH STEP
+
+# TO RUN LOCALLY
+
+1. Clone this repo
+
+2. Install [Bun](https://bun.sh)
+
+3. Run `bun install` to install dependencies
+
+4. Create a database with [Turso](https://turso.tech) and add the connection url and token to a `.env` file in the root of this project
+
+5. Run `bun run db:push` to push the database schema to your database
+
+6. Run `bun run dev` to start the dev server
+
+# TO DEPLOY TO FLY
+
+1. Install the [Fly CLI](https://fly.io/docs/hands-on/install-flyctl/)
+
+2. Run `fly launch`
+
+3. Run `fly secrets set DATABASE_URL=<your url>` & `fly secrets set DATABASE_AUTH_TOKEN=<your token>`
+
+4. Run `fly deploy`

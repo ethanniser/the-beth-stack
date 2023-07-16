@@ -7,15 +7,15 @@ const app = new Elysia()
   .get("/", ({ html }) =>
     html(
       <BaseHtml>
-        <body class="flex w-full h-screen justify-center items-center">
-          <button hx-post="/clicked" hx-swap="outerHTML">
-            Click Me
-          </button>
-        </body>
+        <body
+          class="flex w-full h-screen justify-center items-center"
+          hx-get="/todos"
+          hx-swap="innerHTML"
+          hx-trigger="load"
+        />
       </BaseHtml>
     )
   )
-  .post("/clicked", () => <div class="text-blue-600">I'm from the server!</div>)
   .get("/todos", () => <TodoList todos={db} />)
   .listen(3000);
 

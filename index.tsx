@@ -46,6 +46,26 @@ const app = new Elysia()
       }),
     }
   )
+  .post(
+    "/todos",
+    ({ body }) => {
+      if (body.content.length === 0) {
+        throw new Error("Content cannot be empty");
+      }
+      const newTodo = {
+        id: lastID++,
+        content: body.content,
+        completed: false,
+      };
+      db.push(newTodo);
+      return <TodoItem {...newTodo} />;
+    },
+    {
+      body: t.Object({
+        content: t.String(),
+      }),
+    }
+  )
   .listen(3000);
 
 console.log(
@@ -73,6 +93,7 @@ type Todo = {
   completed: boolean;
 };
 
+let lastID = 2;
 const db: Todo[] = [
   { id: 1, content: "learn the beth stack", completed: true },
   { id: 2, content: "learn vim", completed: false },
@@ -107,6 +128,20 @@ function TodoList({ todos }: { todos: Todo[] }) {
       {todos.map((todo) => (
         <TodoItem {...todo} />
       ))}
+      <TodoForm />
     </div>
+  );
+}
+
+function TodoForm() {
+  return (
+    <form
+      class="flex flex-row space-x-3"
+      hx-post="/todos"
+      hx-swap="beforebegin"
+    >
+      <input type="text" name="content" class="border border-black" />
+      <button type="submit">Add</button>
+    </form>
   );
 }

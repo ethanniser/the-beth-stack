@@ -16,6 +16,7 @@ const app = new Elysia()
     )
   )
   .post("/clicked", () => <div class="text-blue-600">I'm from the server!</div>)
+  .get("/todos", () => <TodoList todos={db} />)
   .listen(3000);
 
 console.log(
@@ -36,3 +37,34 @@ const BaseHtml = ({ children }: elements.Children) => `
 
 ${children}
 `;
+
+type Todo = {
+  id: number;
+  content: string;
+  completed: boolean;
+};
+
+const db: Todo[] = [
+  { id: 1, content: "learn the beth stack", completed: true },
+  { id: 2, content: "learn vim", completed: false },
+];
+
+function TodoItem({ content, completed, id }: Todo) {
+  return (
+    <div class="flex flex-row space-x-3">
+      <p>{content}</p>
+      <input type="checkbox" checked={completed} />
+      <button class="text-red-500">X</button>
+    </div>
+  );
+}
+
+function TodoList({ todos }: { todos: Todo[] }) {
+  return (
+    <div>
+      {todos.map((todo) => (
+        <TodoItem {...todo} />
+      ))}
+    </div>
+  );
+}

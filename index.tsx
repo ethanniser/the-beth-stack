@@ -32,6 +32,20 @@ const app = new Elysia()
       }),
     }
   )
+  .delete(
+    "/todos/:id",
+    ({ params }) => {
+      const todo = db.find((todo) => todo.id === params.id);
+      if (todo) {
+        db.splice(db.indexOf(todo), 1);
+      }
+    },
+    {
+      params: t.Object({
+        id: t.Numeric(),
+      }),
+    }
+  )
   .listen(3000);
 
 console.log(
@@ -75,7 +89,14 @@ function TodoItem({ content, completed, id }: Todo) {
         hx-swap="outerHTML"
         hx-target="closest div"
       />
-      <button class="text-red-500">X</button>
+      <button
+        class="text-red-500"
+        hx-delete={`/todos/${id}`}
+        hx-swap="outerHTML"
+        hx-target="closest div"
+      >
+        X
+      </button>
     </div>
   );
 }

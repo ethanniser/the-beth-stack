@@ -10,7 +10,7 @@ _It may not be the BEST stack, but it is the BETH stack._
 
 ## [HTMX](https://htmx.org/)
 
-Also: [typed-html](https://github.com/nicojs/typed-html), [hyperscript](https://hyperscript.org/), [tailwind-css](https://tailwindcss.com/), and [fly.io](https://fly.io/)
+Also: [typed-html](https://github.com/nicojs/typed-html), [tailwind-css](https://tailwindcss.com/), [drizzle](https://orm.drizzle.team/), [hyperscript](https://hyperscript.org/) and [fly.io](https://fly.io/)
 
 ### VIEW THE LIVE DEMO AT [the-beth-stack.fly.dev](https://the-beth-stack.fly.dev/)
 

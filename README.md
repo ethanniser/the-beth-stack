@@ -10,6 +10,8 @@ _It may not be the BEST stack, but it is the BETH stack._
 
 ## [HTMX](https://htmx.org/)
 
+Also: [typed-html](https://github.com/nicojs/typed-html), [hyperscript](https://hyperscript.org/), [tailwind-css](https://tailwindcss.com/), and [fly.io](https://fly.io/)
+
 ### VIEW THE LIVE DEMO AT [the-beth-stack.fly.dev](https://the-beth-stack.fly.dev/)
 
 ## EACH STEP IN THE TUTORIAL IS [A BRANCH IN THIS REPO](https://github.com/ethanniser/the-beth-stack/branches)

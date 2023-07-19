@@ -59,15 +59,28 @@ const app = new Elysia()
   .post(
     "/todos",
     async ({ body }) => {
-      if (body.content.length === 0) {
-        throw new Error("Content cannot be empty");
-      }
-      const newTodo = await db.insert(todos).values(body).returning().get();
+      const content = {
+        beth: "Learn the BETH stack",
+        vim: "Learn vim",
+        like: "Like the video",
+        sub: "Subscribe to Ethan",
+      };
+
+      const newTodo = await db
+        .insert(todos)
+        .values({ content: content[body.content] })
+        .returning()
+        .get();
       return <TodoItem {...newTodo} />;
     },
     {
       body: t.Object({
-        content: t.String(),
+        content: t.Union([
+          t.Literal("beth"),
+          t.Literal("vim"),
+          t.Literal("like"),
+          t.Literal("sub"),
+        ]),
       }),
     }
   )
@@ -136,7 +149,15 @@ function TodoForm() {
       hx-swap="beforebegin"
       _="on submit target.reset()"
     >
-      <input type="text" name="content" class="border border-black" />
+      <select name="content" class="border border-black">
+        <option value="" disabled="true" selected="true">
+          Select a Todo
+        </option>
+        <option value="beth">Learn the BETH stack</option>
+        <option value="vim">Learn vim</option>
+        <option value="like">Like the video</option>
+        <option value="sub">Subscribe to Ethan</option>
+      </select>
       <button type="submit">Add</button>
     </form>
   );

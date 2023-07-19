@@ -1,4 +1,5 @@
 _this branch uses [twind](https://twind.dev/) for styling_
+_although in theory I followed the docs right it does seem to be working, PRs appriciated :)_
 
 # THE BETH STACK
 

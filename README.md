@@ -12,6 +12,14 @@ _It may not be the BEST stack, but it is the BETH stack._
 
 Also: [typed-html](https://github.com/nicojs/typed-html), [tailwind-css](https://tailwindcss.com/), [drizzle](https://orm.drizzle.team/), [hyperscript](https://hyperscript.org/) and [fly.io](https://fly.io/)
 
+# ADDITIONAL STYLING OPTIONS:
+
+## [twind](https://twind.dev/): check out the [twind branch](https://github.com/ethanniser/the-beth-stack/tree/twind)
+
+## [unocss](https://unocss.dev/): check out the [unocss branch](https://github.com/ethanniser/the-beth-stack/tree/unocss)
+
+_really you can use whatever you like the most_
+
 ### VIEW THE LIVE DEMO AT [the-beth-stack.fly.dev](https://the-beth-stack.fly.dev/)
 
 ## EACH STEP IN THE TUTORIAL IS [A BRANCH IN THIS REPO](https://github.com/ethanniser/the-beth-stack/branches)

@@ -2,10 +2,19 @@
   "name": "the-beth-stack",
   "module": "src/index.tsx",
   "type": "module",
+  "scripts": {
+    "db:push": "bunx drizzle-kit push:sqlite",
+    "db:studio": "bunx drizzle-kit studio",
+    "dev": "concurrently \"bun run --watch src/index.tsx\" \"bun run tw:dev\"",
+    "tw": "bunx tailwindcss -i ./src/styles.css -o ./dist/styles.css",
+    "tw:dev": "bunx tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch"
+  },
   "devDependencies": {
     "@flydotio/dockerfile": "latest",
     "bun-types": "latest",
+    "concurrently": "^8.2.0",
     "drizzle-kit": "^0.19.6",
+    "tailwindcss": "^3.3.3",
     "typed-html": "^3.0.1"
   },
   "peerDependencies": {

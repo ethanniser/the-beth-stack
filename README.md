@@ -12,7 +12,7 @@ _It may not be the BEST stack, but it is the BETH stack._
 
 Also: [typed-html](https://github.com/nicojs/typed-html), [tailwind-css](https://tailwindcss.com/), [drizzle](https://orm.drizzle.team/), [hyperscript](https://hyperscript.org/) and [fly.io](https://fly.io/)
 
-# ADDITIONAL STYLING OPTIONS:
+### ADDITIONAL STYLING OPTIONS:
 
 ## [twind](https://twind.dev/): check out the [twind branch](https://github.com/ethanniser/the-beth-stack/tree/twind)
 

@@ -71,7 +71,7 @@ const app = new Elysia()
       }),
     }
   )
-  .get("/styles.css", () => Bun.file("./dist/styles.css"))
+  .get("/styles.css", () => Bun.file("./tailwind-gen/styles.css"))
   .listen(3000);
 
 console.log(

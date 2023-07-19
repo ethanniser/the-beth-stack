@@ -6,8 +6,8 @@
     "db:push": "bunx drizzle-kit push:sqlite",
     "db:studio": "bunx drizzle-kit studio",
     "dev": "concurrently \"bun run --watch src/index.tsx\" \"bun run tw:dev\"",
-    "tw": "bunx tailwindcss -i ./src/styles.css -o ./dist/styles.css",
-    "tw:dev": "bunx tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch"
+    "tw": "bunx tailwindcss -i ./src/styles.css -o ./tailwind-gen/styles.css",
+    "tw:dev": "bunx tailwindcss -i ./src/styles.css -o ./tailwind-gen/styles.css --watch"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "latest",

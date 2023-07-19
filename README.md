@@ -40,4 +40,6 @@ Also: [typed-html](https://github.com/nicojs/typed-html), [tailwind-css](https:/
 
 3. Run `fly secrets set DATABASE_URL=<your url>` & `fly secrets set DATABASE_AUTH_TOKEN=<your token>`
 
-4. Run `fly deploy`
+4. Generate the tailwind css file with `bun run tw`
+
+5. Run `fly deploy`

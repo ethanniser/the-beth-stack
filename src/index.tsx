@@ -59,15 +59,12 @@ const app = new Elysia()
   .post(
     "/todos",
     async ({ body }) => {
-      if (body.content.length === 0) {
-        throw new Error("Content cannot be empty");
-      }
       const newTodo = await db.insert(todos).values(body).returning().get();
       return <TodoItem {...newTodo} />;
     },
     {
       body: t.Object({
-        content: t.String(),
+        content: t.String({ minLength: 1 }),
       }),
     }
   )

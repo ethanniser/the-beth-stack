@@ -14,9 +14,9 @@ Also: [typed-html](https://github.com/nicojs/typed-html), [tailwind-css](https:/
 
 ### ADDITIONAL STYLING OPTIONS:
 
-## [twind](https://twind.dev/): check out the [twind branch](https://github.com/ethanniser/the-beth-stack/tree/twind)
+#### [twind](https://twind.dev/): check out the [twind branch](https://github.com/ethanniser/the-beth-stack/tree/twind)
 
-## [unocss](https://unocss.dev/): check out the [unocss branch](https://github.com/ethanniser/the-beth-stack/tree/unocss)
+#### [unocss](https://unocss.dev/): check out the [unocss branch](https://github.com/ethanniser/the-beth-stack/tree/unocss)
 
 _really you can use whatever you like the most_
 

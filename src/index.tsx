@@ -87,8 +87,8 @@ const BaseHtml = ({ children }: elements.Children) => `
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>THE BETH STACK</title>
   <script src="https://unpkg.com/htmx.org@1.9.3"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="/dist/output.css" rel="stylesheet">
+  <script src="https://unpkg.com/hyperscript.org@0.9.9"></script>
+  <link href="/styles.css" rel="stylesheet">
 </head>
 
 ${children}

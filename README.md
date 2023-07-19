@@ -1,5 +1,3 @@
-_this branch uses [unocss](https://unocss.dev/) for styling_
-
 # THE BETH STACK
 
 _It may not be the BEST stack, but it is the BETH stack._

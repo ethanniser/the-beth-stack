@@ -4,6 +4,7 @@ import * as elements from "typed-html";
 import { db } from "./db";
 import { Todo, todos } from "./db/schema";
 import { eq } from "drizzle-orm";
+import { tw } from "twind";
 
 const app = new Elysia()
   .use(html())
@@ -11,7 +12,7 @@ const app = new Elysia()
     html(
       <BaseHtml>
         <body
-          class="flex w-full h-screen justify-center items-center"
+          class={tw`flex w-full h-screen justify-center items-center`}
           hx-get="/todos"
           hx-swap="innerHTML"
           hx-trigger="load"
@@ -68,7 +69,6 @@ const app = new Elysia()
       }),
     }
   )
-  .get("/styles.css", () => Bun.file("./tailwind-gen/styles.css"))
   .listen(3000);
 
 console.log(
@@ -85,7 +85,6 @@ const BaseHtml = ({ children }: elements.Children) => `
   <title>THE BETH STACK</title>
   <script src="https://unpkg.com/htmx.org@1.9.3"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.9"></script>
-  <link href="/styles.css" rel="stylesheet">
 </head>
 
 ${children}
@@ -93,7 +92,7 @@ ${children}
 
 function TodoItem({ content, completed, id }: Todo) {
   return (
-    <div class="flex flex-row space-x-3">
+    <div class={tw`flex flex-row space-x-3`}>
       <p>{content}</p>
       <input
         type="checkbox"
@@ -103,7 +102,7 @@ function TodoItem({ content, completed, id }: Todo) {
         hx-target="closest div"
       />
       <button
-        class="text-red-500"
+        class={tw`text-red-500`}
         hx-delete={`/todos/${id}`}
         hx-swap="outerHTML"
         hx-target="closest div"
@@ -128,12 +127,12 @@ function TodoList({ todos }: { todos: Todo[] }) {
 function TodoForm() {
   return (
     <form
-      class="flex flex-row space-x-3"
+      class={tw`flex flex-row space-x-3`}
       hx-post="/todos"
       hx-swap="beforebegin"
       _="on submit target.reset()"
     >
-      <input type="text" name="content" class="border border-black" />
+      <input type="text" name="content" class={tw`border border-black`} />
       <button type="submit">Add</button>
     </form>
   );

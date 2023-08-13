@@ -1,11 +1,11 @@
 {
   "name": "the-beth-stack",
-  "module": "src/index.tsx",
+  "module": "src/index.ts",
   "type": "module",
   "scripts": {
     "db:push": "bunx drizzle-kit push:sqlite",
     "db:studio": "bunx drizzle-kit studio",
-    "dev": "concurrently \"bun run --watch src/index.tsx\" \"bun run tw:dev\"",
+    "dev": "concurrently \"bun run --watch src/index.ts\" \"bun run tw:dev\"",
     "tw": "bunx tailwindcss -i ./src/styles.css -o ./tailwind-gen/styles.css",
     "tw:dev": "bunx tailwindcss -i ./src/styles.css -o ./tailwind-gen/styles.css --watch"
   },
@@ -21,9 +21,10 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@elysiajs/html": "^0.5.2",
+    "@elysiajs/html": "^0.6.0",
     "@libsql/client": "^0.3.0",
     "drizzle-orm": "^0.27.2",
-    "elysia": "^0.5.22"
+    "elysia": "^0.6.0",
+    "elysia-autoroutes": "^0.2.2"
   }
 }

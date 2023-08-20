@@ -18,11 +18,11 @@ Also: [typed-html](https://github.com/nicojs/typed-html), [tailwind-css](https:/
 
 #### [unocss](https://unocss.dev/): check out the [unocss branch](https://github.com/ethanniser/the-beth-stack/tree/unocss)
 
+_really you can use whatever you like the most_
+
 ### ADDITIONAL STYLING OPTIONS:
 
 #### File-based Routing: check out the [elysia-autoroutes branch](https://github.com/ethanniser/the-beth-stack/tree/file-based-routing)
-
-_really you can use whatever you like the most_
 
 ### VIEW THE LIVE DEMO AT [the-beth-stack.fly.dev](https://the-beth-stack.fly.dev/)
 

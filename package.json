@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@elysiajs/html": "^0.5.2",
-    "@libsql/client": "^0.3.0",
+    "@libsql/client": "^0.3.3",
     "drizzle-orm": "^0.27.2",
     "elysia": "^0.5.22"
   }

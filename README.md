@@ -1,3 +1,5 @@
+*some things are kinda out of date, a new video / template repo is coming*
+
 # THE BETH STACK
 
 _It may not be the BEST stack, but it is the BETH stack._

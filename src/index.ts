@@ -31,7 +31,19 @@ async function createElement(
   attributes: PropsWithChildren<unknown> | null,
   ...children: Children[]
 ): Promise<string> {
-  if (name === Suspense && Bun.peek.status(children) !== "fulfilled") {
+  const hasAnyPromiseChildren = children.reduce(
+    (acc, child) => acc || child instanceof Promise,
+    false
+  );
+  const hasAnyUnresolvedPromiseChildren = children.reduce(
+    (acc, child) => acc || Bun.peek.status(child) !== "fulfilled",
+    false
+  );
+
+  if (name === Suspense && hasAnyUnresolvedPromiseChildren) {
+    Promise.all(children).then((resolvedChildren) => {
+      console.log("registering children", resolvedChildren);
+    });
     const id = BETH_GLOBAL.registerChild(children);
 
     if (attributes !== null && "fallback" in attributes) {
@@ -43,8 +55,10 @@ async function createElement(
       `;
     }
   } else {
-    // Converts children to a string if they are promises.
-    children = await Promise.all(children);
+    if (hasAnyPromiseChildren) {
+      // Converts children to a string if they are promises.
+      children = await Promise.all(children);
+    }
   }
 
   // Adds the children to the attributes if it is not present.

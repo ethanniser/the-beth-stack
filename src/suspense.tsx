@@ -45,17 +45,27 @@ export async function Suspense({
   if (!Array.isArray(children))
     throw new Error("children isnt array (shouldnt be possible)");
 
-  if (Bun.peek.status(children) === "fulfilled") {
-    return <>{children}</>;
+  const hasAnyUnresolvedPromiseChildren = children.reduce(
+    (acc, child) => acc || Bun.peek.status(child) !== "fulfilled",
+    false
+  );
+
+  if (!hasAnyUnresolvedPromiseChildren) {
+    return children.join("");
   }
 
   const suspended = Promise.all(children);
   suspended.then((childrenContent) => {
-    const id = BETH_GLOBAL.dismissChild(children);
-    if (!id) throw new Error("Suspense children not found");
-    const content = childrenContent.join("");
+    setTimeout(() => {
+      console.log("dismissing children", childrenContent);
+      const id = BETH_GLOBAL.dismissChild(children);
+      if (!id) {
+        BETH_GLOBAL.streamController?.error("Suspense children not found");
+        throw new Error("Suspense children not found");
+      }
+      const content = childrenContent.join("");
 
-    let withScript = `
+      let withScript = `
         <div hidden id="N:${id}">
             ${content}
         </div>
@@ -64,14 +74,17 @@ export async function Suspense({
         </script>
     `;
 
-    if (!BETH_GLOBAL.sentFirstChunk) {
-      withScript = swapScript + withScript;
-      BETH_GLOBAL.sentFirstChunk = true;
-    }
+      if (!BETH_GLOBAL.sentFirstChunk) {
+        withScript = swapScript + withScript;
+        BETH_GLOBAL.sentFirstChunk = true;
+      }
 
-    BETH_GLOBAL.streamController?.enqueue(withScript);
+      console.log("sending", withScript);
+      BETH_GLOBAL.streamController?.enqueue(withScript);
 
-    BETH_GLOBAL.checkIfEnd();
+      console.log("here");
+      BETH_GLOBAL.checkIfEnd();
+    }, 0);
   });
   return fallback;
 }

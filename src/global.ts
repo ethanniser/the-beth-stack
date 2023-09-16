@@ -4,7 +4,7 @@ class BethGlobalStore {
   public dedupeCache: WeakMap<Function, Map<Array<any>, any>>;
   public streamController: ReadableStreamDefaultController<string> | undefined;
   public counter: number;
-  public suspenseMap: Map<Children, number>;
+  private suspenseMap: Map<Children, number>;
   public sentFirstChunk: boolean;
 
   constructor() {
@@ -19,7 +19,7 @@ class BethGlobalStore {
     this.dedupeCache = new WeakMap();
     this.streamController = undefined;
     this.counter = 1;
-    this.suspenseMap = new Map();
+    // this.suspenseMap = new Map();
     this.sentFirstChunk = false;
   }
 
@@ -37,10 +37,18 @@ class BethGlobalStore {
     return id;
   }
 
+  public endStream() {
+    this.streamController?.close();
+    this.suspenseMap = new Map();
+    this.sentFirstChunk = false;
+  }
+
   public checkIfEnd() {
+    console.log("checking if end");
     if (this.suspenseMap.size === 0) {
+      console.log("ending");
       this.streamController?.enqueue("</body></html>");
-      this.streamController?.close();
+      this.endStream();
     }
   }
 }

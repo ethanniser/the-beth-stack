@@ -6,7 +6,7 @@ export function render<T extends string | Promise<string>>(x: T): T {
 }
 
 export function renderToStream(node: JSX.Element): Response {
-  BETH_GLOBAL.reset();
+  // BETH_GLOBAL.reset();
   const stream = new ReadableStream<string>({
     start(c) {
       c.enqueue(`
@@ -22,6 +22,7 @@ export function renderToStream(node: JSX.Element): Response {
       BETH_GLOBAL.streamController = c;
       node
         .then((data) => {
+          console.log("sending initial data", data);
           BETH_GLOBAL.streamController?.enqueue(data);
           BETH_GLOBAL.checkIfEnd();
         })
@@ -29,7 +30,7 @@ export function renderToStream(node: JSX.Element): Response {
           console.error("Error in promise:", error);
           // Handle error appropriately
           BETH_GLOBAL.streamController?.error(error);
-          BETH_GLOBAL.streamController?.close();
+          BETH_GLOBAL.endStream();
         });
     },
   });

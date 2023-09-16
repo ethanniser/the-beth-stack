@@ -23,8 +23,9 @@ const App = () => (
   <div>
     <p>I am sent immediately</p>
     <Suspense fallback={<div>Loading...</div>}>
-      {/* <Wait ms={1000} /> */}
+      <Wait ms={1000} />
       <div>hello</div>
+      <Foo />
     </Suspense>
     <p>hey me too!</p>
     {/* <Suspense fallback={<div>different loading!</div>}>

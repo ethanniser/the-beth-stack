@@ -24,11 +24,11 @@ const App = () => (
       <Wait ms={1000} />
       <div>hello</div>
     </Suspense>
-    {/* <p>hey me too!</p> */}
-    {/* <Suspense fallback={<div>different loading!</div>}> */}
-    {/* <Wait ms={2000} /> */}
-    {/* <div>hello two!</div> */}
-    {/* </Suspense> */}
+    <p>hey me too!</p>
+    <Suspense fallback={<div>different loading!</div>}>
+      <Wait ms={2000} />
+      <div>hello two!</div>
+    </Suspense>
   </div>
 );
 

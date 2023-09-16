@@ -27,11 +27,9 @@ async function createElement(
   attributes: PropsWithChildren<unknown> | null,
   ...children: Children[]
 ): Promise<string> {
-  // Converts children to a string if they are promises.
-  if (name !== Suspense) {
-    children = await Promise.all(children);
-  } else {
+  if (name === Suspense) {
     const id = BETH_GLOBAL.registerChild(children);
+    console.log("suspense registered", BETH_GLOBAL.suspenseMap.size);
 
     if (attributes !== null && "fallback" in attributes) {
       attributes.fallback =
@@ -39,6 +37,9 @@ async function createElement(
         (await attributes.fallback) +
         "</div>";
     }
+  } else {
+    // Converts children to a string if they are promises.
+    children = await Promise.all(children);
   }
 
   // Adds the children to the attributes if it is not present.

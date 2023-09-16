@@ -1,6 +1,7 @@
 /**
  * FORK OF [kitajs/html](https://github.com/kitajs/html)
  */
+/// <reference path="./jsx.d.ts" />
 
 import { attributesToString, contentsToString, isVoidElement } from "./utils";
 import { Suspense } from "./suspense";
@@ -23,14 +24,14 @@ type Component<T = {}> = (props: PropsWithChildren<T>) => JSX.Element;
 type AsyncComponent<T = {}> = (props: PropsWithChildren<T>) => Promise<string>;
 type SyncComponent<T = {}> = (props: PropsWithChildren<T>) => string;
 
-const Fragment: unique symbol = Symbol.for("kHtmlFragment");
+const Fragment: unique symbol = Symbol.for("beth-stack-fragment");
 
 async function createElement(
   name: string | Component | typeof Fragment,
   attributes: PropsWithChildren<unknown> | null,
   ...children: Children[]
 ): Promise<string> {
-  if (name === Suspense) {
+  if (name === Suspense && Bun.peek.status(children) !== "fulfilled") {
     const id = BETH_GLOBAL.registerChild(children);
 
     if (attributes !== null && "fallback" in attributes) {
@@ -201,3 +202,4 @@ export {
 
 export { cache } from "./cache";
 export { render, renderToStream } from "./render";
+export { Suspense } from "./suspense";

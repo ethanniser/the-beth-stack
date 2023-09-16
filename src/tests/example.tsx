@@ -17,22 +17,24 @@ async function Wait({ ms }: { ms: number }) {
   return <div>loaded in: {data}ms</div>;
 }
 
+const Foo = async () => <p>foo</p>;
+
 const App = () => (
   <div>
     <p>I am sent immediately</p>
     <Suspense fallback={<div>Loading...</div>}>
-      <Wait ms={1000} />
+      {/* <Wait ms={1000} /> */}
       <div>hello</div>
     </Suspense>
     <p>hey me too!</p>
-    <Suspense fallback={<div>different loading!</div>}>
+    {/* <Suspense fallback={<div>different loading!</div>}>
       <Wait ms={2000} />
       <div>hello two!</div>
       <Suspense fallback={<div>loading three!</div>}>
         <Wait ms={3000} />
         <div>hello three!</div>
       </Suspense>
-    </Suspense>
+    </Suspense> */}
   </div>
 );
 

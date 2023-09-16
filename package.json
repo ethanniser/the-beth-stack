@@ -1,5 +1,5 @@
 {
-  "name": "jank-rsc",
+  "name": "beth-jsx",
   "module": "src/index.ts",
   "type": "module",
   "exports": {

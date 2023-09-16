@@ -45,7 +45,11 @@ export async function Suspense({
   if (!Array.isArray(children))
     throw new Error("children isnt array (shouldnt be possible)");
 
-  const suspended = Array.isArray(children) ? Promise.all(children) : children;
+  if (Bun.peek.status(children) === "fulfilled") {
+    return <>{children}</>;
+  }
+
+  const suspended = Promise.all(children);
   suspended.then((childrenContent) => {
     const id = BETH_GLOBAL.dismissChild(children);
     if (!id) throw new Error("Suspense children not found");

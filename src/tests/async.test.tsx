@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import Html, { PropsWithChildren } from "../lib";
+import Html, { PropsWithChildren } from "..";
 
-import { render } from "../lib/render";
-import { cache } from "../lib/cache";
+import { render } from "../render";
+import { cache } from "../cache";
 
 describe("async components", () => {
   test("basic", async () => {

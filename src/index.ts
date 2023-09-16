@@ -1,3 +1,7 @@
+/**
+ * FORK OF [kitajs/html](https://github.com/kitajs/html)
+ */
+
 import { attributesToString, contentsToString, isVoidElement } from "./utils";
 import { Suspense } from "./suspense";
 import { BETH_GLOBAL } from "./global";

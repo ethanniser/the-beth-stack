@@ -1,3 +1,7 @@
+/**
+ * FORK OF [kitajs/html](https://github.com/kitajs/html)
+ */
+
 import type { Children } from ".";
 
 const CAMEL_REGEX = /[a-z][A-Z]/;

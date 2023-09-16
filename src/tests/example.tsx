@@ -1,7 +1,7 @@
 import Elysia from "elysia";
-import Html from "../lib";
-import { renderToStream } from "../lib/render";
-import { Suspense } from "../lib/suspense";
+import Html from "..";
+import { renderToStream } from "../render";
+import { Suspense } from "../suspense";
 
 function wait(ms: number): Promise<number> {
   return new Promise((resolve) =>

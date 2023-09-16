@@ -170,3 +170,5 @@ dist
 
 # IntelliJ based IDEs
 .idea
+
+tsconfig.tsbuildinfo

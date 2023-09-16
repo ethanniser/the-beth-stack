@@ -1,6 +1,7 @@
 import type { Children } from ".";
 
 const CAMEL_REGEX = /[a-z][A-Z]/;
+const ESCAPED_REGEX = /[<"'&]/;
 
 export function isUpper(input: string, index: number): boolean {
   const code = input.charCodeAt(index);
@@ -252,6 +253,54 @@ export function toKebabCase(camel: string): string {
 
   return kebab;
 }
+function escapeHtml(value: any): string {
+  if (typeof value !== "string") {
+    value = value.toString();
+  }
+
+  // This is a optimization to avoid the whole conversion process when the
+  // string does not contain any uppercase characters.
+  if (!ESCAPED_REGEX.test(value)) {
+    return value;
+  }
+
+  const length = value.length;
+  let escaped = "";
+
+  let start = 0;
+  let end = 0;
+
+  // Faster than using regex
+  // https://jsperf.app/kakihu
+  for (; end < length; end++) {
+    // https://wonko.com/post/html-escaping
+    switch (value[end]) {
+      case "&":
+        escaped += value.slice(start, end) + "&amp;";
+        start = end + 1;
+        continue;
+      // We don't need to escape > because it is only used to close tags.
+      // https://stackoverflow.com/a/9189067
+      case "<":
+        escaped += value.slice(start, end) + "&lt;";
+        start = end + 1;
+        continue;
+      case '"':
+        escaped += value.slice(start, end) + "&#34;";
+        start = end + 1;
+        continue;
+      case "'":
+        escaped += value.slice(start, end) + "&#39;";
+        start = end + 1;
+        continue;
+    }
+  }
+
+  // Appends the remaining string.
+  escaped += value.slice(start, end);
+
+  return escaped;
+}
 
 export function contentsToString(
   this: void,
@@ -279,7 +328,7 @@ export function contentsToString(
     if (Array.isArray(content)) {
       result += contentsToString(content, escape);
     } else if (escape === true) {
-      result += Bun.escapeHTML(content);
+      result += Bun ? Bun.escapeHTML(content) : escapeHtml(content);
     } else {
       result += content;
     }

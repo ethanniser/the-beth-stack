@@ -1,5 +1,40 @@
 import { BETH_GLOBAL } from "./global";
 
+const swapScript = `
+  <script>
+  $RC = function(newId, oldId) {
+    let newContentDiv = document.getElementById(newId);
+    let oldTemplate = document.getElementById(oldId);
+
+    // Check for existence of both elements
+    if (!newContentDiv || !oldTemplate) return;
+
+    // Start from the next sibling of the template to find the fallback content
+    let currentNode = oldTemplate.nextSibling;
+
+    // Iterate and remove nodes until the <!--/$--> comment is found
+    while (currentNode) {
+        if (currentNode.nodeType === 8 && currentNode.data === "/$") {
+            // Found the ending comment; break out of the loop
+            break;
+        }
+        let nextNode = currentNode.nextSibling;
+        currentNode.remove();
+        currentNode = nextNode;
+    }
+
+    // Insert the new content in the place of the fallback
+    oldTemplate.parentNode.insertBefore(newContentDiv, oldTemplate.nextSibling);
+
+    // Remove the old template
+    oldTemplate.remove();
+
+    // Unhide the new content
+    newContentDiv.removeAttribute('hidden');
+  };
+  </script>
+`;
+
 export async function Suspense({
   fallback,
   children,
@@ -13,27 +48,22 @@ export async function Suspense({
   const suspended = Array.isArray(children) ? Promise.all(children) : children;
   suspended.then((childrenContent) => {
     const id = BETH_GLOBAL.dismissChild(children);
-    console.log("suspense dismissed", BETH_GLOBAL.suspenseMap.size);
     if (!id) throw new Error("Suspense children not found");
     const content = childrenContent.join("");
 
-    const withScript =
-      `<div hidden id="$BETH-CONTENT-${id}">` +
-      content +
-      "</div>" +
-      `
+    let withScript = `
+        <div hidden id="N:${id}">
+            ${content}
+        </div>
         <script>
-          const fallback = document.getElementById("$BETH-FALLBACK-${id}");
-          const content = document.getElementById("$BETH-CONTENT-${id}");
-          if (fallback && content) {
-            while (content.firstChild) {
-                fallback.parentNode.insertBefore(content.firstChild, fallback);
-            }
-            fallback.remove();
-            content.remove();
-          }
+            $RC("N:${id}", "B:${id}");
         </script>
-      `;
+    `;
+
+    if (!BETH_GLOBAL.sentFirstChunk) {
+      withScript = swapScript + withScript;
+      BETH_GLOBAL.sentFirstChunk = true;
+    }
 
     BETH_GLOBAL.streamController?.enqueue(withScript);
 

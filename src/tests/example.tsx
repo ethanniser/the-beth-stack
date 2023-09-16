@@ -1,7 +1,7 @@
 import Elysia from "elysia";
-import Html from "./lib";
-import { renderToStream } from "./lib/render";
-import { Suspense } from "./lib/suspense";
+import Html from "../lib";
+import { renderToStream } from "../lib/render";
+import { Suspense } from "../lib/suspense";
 
 function wait(ms: number): Promise<number> {
   return new Promise((resolve) =>
@@ -28,6 +28,10 @@ const App = () => (
     <Suspense fallback={<div>different loading!</div>}>
       <Wait ms={2000} />
       <div>hello two!</div>
+      <Suspense fallback={<div>loading three!</div>}>
+        <Wait ms={3000} />
+        <div>hello three!</div>
+      </Suspense>
     </Suspense>
   </div>
 );

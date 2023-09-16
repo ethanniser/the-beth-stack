@@ -5,12 +5,14 @@ class BethGlobalStore {
   public streamController: ReadableStreamDefaultController<string> | undefined;
   public counter: number;
   public suspenseMap: Map<Children, number>;
+  public sentFirstChunk: boolean;
 
   constructor() {
     this.dedupeCache = new WeakMap();
     this.streamController = undefined;
     this.counter = 1;
     this.suspenseMap = new Map();
+    this.sentFirstChunk = false;
   }
 
   public reset() {
@@ -18,6 +20,7 @@ class BethGlobalStore {
     this.streamController = undefined;
     this.counter = 1;
     this.suspenseMap = new Map();
+    this.sentFirstChunk = false;
   }
 
   public registerChild(child: Children[]): number {

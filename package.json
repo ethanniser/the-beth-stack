@@ -3,7 +3,7 @@
   "module": "src/index.ts",
   "type": "module",
   "scripts": {
-    "go": "bun run --hot src/example.tsx",
+    "go": "bun run --hot src/tests/example.tsx",
     "typecheck": "bunx --bun tsc"
   },
   "devDependencies": {

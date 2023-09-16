@@ -29,13 +29,14 @@ async function createElement(
 ): Promise<string> {
   if (name === Suspense) {
     const id = BETH_GLOBAL.registerChild(children);
-    console.log("suspense registered", BETH_GLOBAL.suspenseMap.size);
 
     if (attributes !== null && "fallback" in attributes) {
-      attributes.fallback =
-        `<div id="$BETH-FALLBACK-${id}">` +
-        (await attributes.fallback) +
-        "</div>";
+      attributes.fallback = `
+        <!--$?-->
+        <template id="B:${id}"></template>
+        <div>${await attributes.fallback}</div>
+        <!--/$-->
+      `;
     }
   } else {
     // Converts children to a string if they are promises.

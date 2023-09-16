@@ -23,7 +23,6 @@ export function renderToStream(node: JSX.Element): Response {
       node
         .then((data) => {
           BETH_GLOBAL.streamController?.enqueue(data);
-          console.log("current suspense count", BETH_GLOBAL.suspenseMap.size);
           BETH_GLOBAL.checkIfEnd();
         })
         .catch((error) => {

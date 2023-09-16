@@ -26,7 +26,6 @@ type SyncComponent<T = {}> = (props: PropsWithChildren<T>) => string;
 const Fragment: unique symbol = Symbol.for("kHtmlFragment");
 
 async function createElement(
-  this: void,
   name: string | Component | typeof Fragment,
   attributes: PropsWithChildren<unknown> | null,
   ...children: Children[]
@@ -199,3 +198,6 @@ export {
   AsyncComponent,
   SyncComponent,
 };
+
+export { cache } from "./cache";
+export { render, renderToStream } from "./render";

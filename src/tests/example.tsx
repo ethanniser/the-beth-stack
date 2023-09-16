@@ -1,5 +1,5 @@
 import Elysia from "elysia";
-import Html from "..";
+import "../register";
 import { renderToStream } from "../render";
 import { Suspense } from "../suspense";
 

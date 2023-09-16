@@ -307,7 +307,6 @@ function escapeHtml(value: any): string {
 }
 
 export function contentsToString(
-  this: void,
   contents: Children[],
   escape?: boolean
 ): string {

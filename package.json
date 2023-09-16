@@ -2,6 +2,11 @@
   "name": "jank-rsc",
   "module": "src/index.ts",
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./register": "./src/register.ts",
+    "./htmx": "./src/htmx.ts"
+  },
   "scripts": {
     "go": "bun run --hot src/tests/example.tsx",
     "typecheck": "bunx --bun tsc"

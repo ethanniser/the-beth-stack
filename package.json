@@ -1,0 +1,18 @@
+{
+  "name": "jank-rsc",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "go": "bun run --hot src/example.tsx",
+    "typecheck": "bunx --bun tsc"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "elysia": "^0.6.23"
+  }
+}

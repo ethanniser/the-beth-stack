@@ -2,7 +2,7 @@ import { BETH_GLOBAL } from "./global";
 
 const swapScript = `
   <script>
-  $RC = function(newId, oldId) {
+$RC = function(newId, oldId) {
     let newContentDiv = document.getElementById(newId);
     let oldTemplate = document.getElementById(oldId);
 
@@ -23,14 +23,14 @@ const swapScript = `
         currentNode = nextNode;
     }
 
-    // Insert the new content in the place of the fallback
-    oldTemplate.parentNode.insertBefore(newContentDiv, oldTemplate.nextSibling);
+    // Directly insert the children of newContentDiv (to unwrap the div)
+    while (newContentDiv.firstChild) {
+        oldTemplate.parentNode.insertBefore(newContentDiv.firstChild, oldTemplate.nextSibling);
+    }
 
-    // Remove the old template
+    // Remove the newContentDiv wrapper and the old template
+    newContentDiv.remove();
     oldTemplate.remove();
-
-    // Unhide the new content
-    newContentDiv.removeAttribute('hidden');
   };
   </script>
 `;

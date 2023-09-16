@@ -28,14 +28,14 @@ const App = () => (
       <Foo />
     </Suspense>
     <p>hey me too!</p>
-    {/* <Suspense fallback={<div>different loading!</div>}>
+    <Suspense fallback={<div>different loading!</div>}>
       <Wait ms={2000} />
       <div>hello two!</div>
       <Suspense fallback={<div>loading three!</div>}>
         <Wait ms={3000} />
         <div>hello three!</div>
       </Suspense>
-    </Suspense> */}
+    </Suspense>
   </div>
 );
 

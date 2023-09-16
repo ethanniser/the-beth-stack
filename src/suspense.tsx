@@ -57,7 +57,6 @@ export async function Suspense({
   const suspended = Promise.all(children);
   suspended.then((childrenContent) => {
     setTimeout(() => {
-      console.log("dismissing children", childrenContent);
       const id = BETH_GLOBAL.dismissChild(children);
       if (!id) {
         BETH_GLOBAL.streamController?.error("Suspense children not found");
@@ -79,10 +78,8 @@ export async function Suspense({
         BETH_GLOBAL.sentFirstChunk = true;
       }
 
-      console.log("sending", withScript);
       BETH_GLOBAL.streamController?.enqueue(withScript);
 
-      console.log("here");
       BETH_GLOBAL.checkIfEnd();
     }, 0);
   });

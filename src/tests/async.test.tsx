@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import Html, { PropsWithChildren } from "..";
 
-import { render } from "../render";
+import { renderToString } from "../render";
 import { cache } from "../cache";
 
 describe("async components", () => {
@@ -91,12 +91,12 @@ describe("async components", () => {
       return <p>number: {data}</p>;
     };
 
-    const html = await render(
+    const html = await renderToString(() => (
       <>
         <Component />
         <Component />
       </>
-    );
+    ));
 
     expect(html).toBe(`<p>number: 1</p><p>number: 1</p>`);
   });
@@ -111,12 +111,12 @@ describe("async components", () => {
       return <p>number: {data}</p>;
     };
 
-    const html = await render(
+    const html = await renderToString(() => (
       <>
         <Component />
         <Component />
       </>
-    );
+    ));
 
     expect(html).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
@@ -131,12 +131,12 @@ describe("async components", () => {
 
     expect(html2).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
-    const html3 = await render(
+    const html3 = await renderToString(() => (
       <>
         <Component />
         <Component />
       </>
-    );
+    ));
 
     expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
   });

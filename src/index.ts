@@ -40,10 +40,13 @@ async function createElement(
     false
   );
 
-  if (name === Suspense && hasAnyUnresolvedPromiseChildren) {
-    Promise.all(children).then((resolvedChildren) => {
-      console.log("registering children", resolvedChildren);
-    });
+  const insideStreamCall = BETH_GLOBAL.streamController !== undefined;
+
+  if (
+    name === Suspense &&
+    hasAnyUnresolvedPromiseChildren &&
+    insideStreamCall
+  ) {
     const id = BETH_GLOBAL.registerChild(children);
 
     if (attributes !== null && "fallback" in attributes) {
@@ -215,5 +218,5 @@ export {
 };
 
 export { cache } from "./cache";
-export { render, renderToStream } from "./render";
+export { renderToString, renderToStream } from "./render";
 export { Suspense } from "./suspense";

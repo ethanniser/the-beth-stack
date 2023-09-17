@@ -3,6 +3,18 @@ import { Database } from "bun:sqlite";
 import { unlinkSync } from "node:fs";
 import { BETH_GLOBAL_PERSISTED_CACHE } from "../shared/global";
 
+export type CacheOptions = {
+  persist?: "memory" | "json";
+  revalidate?: number;
+  tags?: string[];
+};
+
+export type GlobalCacheConfig = {
+  log: boolean;
+  defaultCacheOptions: Required<CacheOptions>;
+  returnStaleWhileRevalidate: boolean;
+};
+
 export function persistedCache<T extends () => Promise<any>>(
   callBack: T,
   key: string,
@@ -28,19 +40,11 @@ export async function revalidateTag(tag: string): Promise<void> {
   return BETH_GLOBAL_PERSISTED_CACHE.revalidateTag(tag);
 }
 
-export function setGlobalPersistCacheConfig(config: {
-  log?: boolean;
-  defaultCacheOptions?: CacheOptions;
-  returnStaleWhileRevalidate?: boolean;
-}) {
+export function setGlobalPersistCacheConfig(
+  config: Partial<GlobalCacheConfig>
+) {
   BETH_GLOBAL_PERSISTED_CACHE.setConfig(config);
 }
-
-type CacheOptions = {
-  persist?: "memory" | "json";
-  revalidate?: number;
-  tags?: string[];
-};
 
 export class BethPersistCache {
   private callBackMap: Map<
@@ -91,11 +95,7 @@ export class BethPersistCache {
     `);
   }
 
-  public setConfig(config: {
-    log?: boolean;
-    defaultCacheOptions?: CacheOptions;
-    returnStaleWhileRevalidate?: boolean;
-  }) {
+  public setConfig(config: Partial<GlobalCacheConfig>) {
     this.config.defaultCacheOptions = {
       ...this.config.defaultCacheOptions,
       ...config.defaultCacheOptions,

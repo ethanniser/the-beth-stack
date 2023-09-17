@@ -15,7 +15,8 @@
     "test": "bun test"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "csstype": "^3.1.2"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

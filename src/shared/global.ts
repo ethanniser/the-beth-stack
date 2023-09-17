@@ -37,9 +37,14 @@ class BethGlobalStore {
     return id;
   }
 
-  public checkIfEnd() {
+  public closeNow() {
+    this.streamController?.close();
+    this.reset();
+  }
+
+  public checkIfEndAndClose() {
     if (this.suspenseMap.size === 0) {
-      this.streamController?.close();
+      this.closeNow();
     }
   }
 }

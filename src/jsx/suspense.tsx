@@ -68,7 +68,7 @@ export async function Suspense({
 
       BETH_GLOBAL.streamController?.enqueue(withScript);
 
-      BETH_GLOBAL.checkIfEnd();
+      BETH_GLOBAL.checkIfEndAndClose();
     }, 0);
   });
   return fallback;

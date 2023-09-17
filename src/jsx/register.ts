@@ -1,4 +1,5 @@
 import idkHtml from ".";
+import "./htmx";
 
 globalThis.Html = idkHtml;
 

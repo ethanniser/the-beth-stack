@@ -1,11 +1,10 @@
 {
-  "name": "beth",
+  "name": "beth-stack",
   "module": "src/index.ts",
   "type": "module",
   "exports": {
     "./jsx": "./src/jsx/index.ts",
     "./jsx/register": "./src/jsx/register.ts",
-    "./jsx/htmx": "./src/jsx/htmx.ts",
     "./cache": "./src/cache/index.ts",
     "./elysia": "./src/elysia/index.ts"
   },

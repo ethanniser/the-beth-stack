@@ -1,4 +1,4 @@
-import { cache } from "./cache";
+import { cache } from "./render";
 import { Database } from "bun:sqlite";
 import { unlinkSync } from "node:fs";
 import { BETH_GLOBAL_PERSISTED_CACHE } from "../shared/global";
@@ -13,6 +13,7 @@ export type GlobalCacheConfig = {
   log: boolean;
   defaultCacheOptions: Required<CacheOptions>;
   returnStaleWhileRevalidate: boolean;
+  dev: boolean;
 };
 
 export function persistedCache<T extends () => Promise<any>>(
@@ -61,18 +62,11 @@ export class BethPersistCache {
   private intervals: Set<Timer>;
   private keys: Set<string>;
   private inInitialLoad: Set<string>;
-  private config: {
-    log: boolean;
-    defaultCacheOptions: Required<CacheOptions>;
-    returnStaleWhileRevalidate: boolean;
-  };
+  private config: GlobalCacheConfig;
 
   constructor() {
-    unlinkSync("beth-cache.sqlite");
-
     this.callBackMap = new Map();
     this.inMemoryDataCache = new Map();
-    this.jsonDataCache = new Database("beth-cache.sqlite");
     this.intervals = new Set();
     this.pendingMap = new Map();
     this.keys = new Set();
@@ -85,10 +79,13 @@ export class BethPersistCache {
         tags: [],
       },
       returnStaleWhileRevalidate: true,
+      dev: false,
     };
 
+    unlinkSync("beth-cache.sqlite");
+    this.jsonDataCache = new Database("beth-cache.sqlite");
     this.jsonDataCache.run(`
-      CREATE TABLE cache (
+      CREATE TABLE IF NOT EXISTS cache (
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL
       );
@@ -124,10 +121,7 @@ export class BethPersistCache {
       .get(key) as { value: string } | undefined;
     if (!result) {
       if (this.config.log)
-        console.log(
-          "No entry found in memory cache when one was expected:",
-          key
-        );
+        console.log("No entry found in json cache when one was expected:", key);
       throw new Error("JSON Cache Miss");
     }
     return JSON.parse(result.value);
@@ -159,8 +153,9 @@ export class BethPersistCache {
       this.keys.add(key);
     }
 
-    if (this.config.log)
+    if (this.config.log) {
       console.log("Initial Callback run to seed cache: ", key);
+    }
 
     const promise = callBack();
     this.inInitialLoad.add(key);

@@ -172,3 +172,4 @@ dist
 .idea
 
 tsconfig.tsbuildinfo
+beth-cache.sqlite

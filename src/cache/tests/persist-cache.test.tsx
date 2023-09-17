@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test";
 import { persistedCache, revalidateTag } from "../persist";
-import "../register";
+import "../../jsx/register";
 import { renderToString } from "../../jsx/render";
 
 test("static json cache", async () => {

@@ -1,5 +1,12 @@
 import { cache } from "./cache";
 import { Database } from "bun:sqlite";
+import { unlinkSync } from "node:fs";
+
+type CacheOptions = {
+  persist?: "memory" | "json";
+  revalidate?: number;
+  tags?: string[];
+};
 
 class BethPersistCache {
   private callBackMap: Map<
@@ -7,7 +14,7 @@ class BethPersistCache {
     {
       callBack: () => Promise<any>;
       tags: string[];
-      cache: "memory" | "json";
+      location: "memory" | "json";
     }
   >;
   private pendingMap: Map<string, Promise<any>>;
@@ -17,15 +24,13 @@ class BethPersistCache {
   private keys: Set<string>;
   private config: {
     log: boolean;
-    defaultCacheOptions: {
-      persist: "json" | "memory";
-      revalidate: number;
-      tags: string[];
-    };
+    defaultCacheOptions: Required<CacheOptions>;
     returnStaleWhileRevalidate: boolean;
   };
 
   constructor() {
+    unlinkSync("beth-cache.sqlite");
+
     this.callBackMap = new Map();
     this.inMemoryDataCache = new Map();
     this.jsonDataCache = new Database("beth-cache.sqlite");
@@ -43,15 +48,18 @@ class BethPersistCache {
     };
 
     this.jsonDataCache.run(`
-      DROP TABLE IF EXISTS cache;
-    `);
-
-    this.jsonDataCache.run(`
       CREATE TABLE cache (
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL
       );
     `);
+  }
+
+  public setConfig(config: Partial<typeof this.config>) {
+    this.config = {
+      ...this.config,
+      ...config,
+    };
   }
 
   private setJsonCache(key: string, value: any) {
@@ -76,17 +84,22 @@ class BethPersistCache {
 
   public seed({
     key,
-    tags,
-    revalidate,
     callBack,
-    cache,
+    options,
   }: {
-    cache: "memory" | "json";
     callBack: () => Promise<any>;
     key: string;
-    tags: string[];
-    revalidate: number;
+    options?: CacheOptions;
   }) {
+    const {
+      persist: location,
+      revalidate,
+      tags,
+    } = {
+      ...this.config.defaultCacheOptions,
+      ...options,
+    };
+
     if (this.keys.has(key)) {
       throw new Error(
         `Persistant Cache Key already exists: ${key} - these much be unqiue across your entire app`
@@ -102,16 +115,16 @@ class BethPersistCache {
 
     promise.then((value) => {
       this.pendingMap.delete(key);
-      if (this.config.log) console.log(`Seeding ${cache} Cache:`, key);
-      if (cache === "memory") {
+      if (this.config.log) console.log(`Seeding ${location} Cache:`, key);
+      if (location === "memory") {
         this.inMemoryDataCache.set(key, value);
-      } else if (cache === "json") {
+      } else if (location === "json") {
         this.setJsonCache(key, value);
       }
       this.callBackMap.set(key, {
         callBack,
         tags,
-        cache,
+        location,
       });
       if (revalidate > 0) {
         this.setInterval(key, revalidate);
@@ -131,19 +144,19 @@ class BethPersistCache {
     if (!result) {
       throw new Error("No callback found for key: " + key);
     }
-    const { callBack, tags, cache } = result;
+    const { callBack, tags, location } = result;
     const callBackPromise = callBack();
     this.pendingMap.set(key, callBackPromise);
     callBackPromise.then((value) => {
-      if (cache === "memory") {
+      if (location === "memory") {
         this.inMemoryDataCache.set(key, value);
-      } else if (cache === "json") {
+      } else if (location === "json") {
         this.setJsonCache(key, value);
       }
       this.callBackMap.set(key, {
         callBack,
         tags,
-        cache,
+        location,
       });
       this.pendingMap.delete(key);
     });
@@ -211,33 +224,32 @@ class BethPersistCache {
       }
     }
   }
+
+  public getDefaultOptions() {
+    return this.config.defaultCacheOptions;
+  }
 }
 
 const GLOBAL_CACHE = new BethPersistCache();
-
-type CacheOptions = {
-  persist?: "memory" | "json";
-  revalidate?: number;
-  tags?: string[];
-};
 
 export function persistedCache<T extends () => Promise<any>>(
   callBack: T,
   key: string,
   options?: CacheOptions
 ): T {
-  const persist = options?.persist ?? "json";
-  const revalidate = options?.revalidate ?? Infinity;
-  const tags = options?.tags ?? [];
+  const filledOptions = {
+    ...GLOBAL_CACHE.getDefaultOptions(),
+    ...options,
+  };
 
   GLOBAL_CACHE.seed({
     callBack,
     key,
-    tags,
-    revalidate,
-    cache: persist,
+    options: filledOptions,
   });
-  return cache(() => GLOBAL_CACHE.getCachedValue(key, persist)) as T;
+  return cache(() =>
+    GLOBAL_CACHE.getCachedValue(key, filledOptions.persist)
+  ) as T;
 }
 
 export function revalidateTag(tag: string) {

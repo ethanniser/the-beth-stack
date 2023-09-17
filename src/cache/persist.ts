@@ -1,6 +1,6 @@
 import { cache } from "./render";
 import { Database } from "bun:sqlite";
-import { unlinkSync } from "node:fs";
+import { unlinkSync, existsSync } from "node:fs";
 import { BETH_GLOBAL_PERSISTED_CACHE } from "../shared/global";
 
 export type CacheOptions = {
@@ -25,11 +25,13 @@ export function persistedCache<T extends () => Promise<any>>(
     ...options,
   };
 
-  BETH_GLOBAL_PERSISTED_CACHE.seed({
-    callBack,
-    key,
-    options: filledOptions,
-  });
+  if (globalThis.RENDER_COUNT <= 1) {
+    BETH_GLOBAL_PERSISTED_CACHE.seed({
+      callBack,
+      key,
+      options: filledOptions,
+    });
+  }
   return cache(() =>
     BETH_GLOBAL_PERSISTED_CACHE.getCachedValue(key, filledOptions.persist)
   ) as T;
@@ -80,8 +82,11 @@ export class BethPersistCache {
       returnStaleWhileRevalidate: true,
     };
 
-    unlinkSync("beth-cache.sqlite");
-    this.jsonDataCache = new Database("beth-cache.sqlite");
+    if (existsSync("beth-cache.sqlite")) unlinkSync("beth-cache.sqlite");
+    this.jsonDataCache = new Database("beth-cache.sqlite", {
+      readwrite: true,
+      create: true,
+    });
     this.jsonDataCache.run(`
       CREATE TABLE IF NOT EXISTS cache (
         key TEXT PRIMARY KEY,

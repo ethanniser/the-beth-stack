@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
-import "../src/jsx/register";
-import { renderToStream, renderToStringResponse } from "../src/jsx/render";
-import { Suspense } from "./jsx/suspense";
+import "../jsx/register";
+import { renderToStreamResponse, renderToStringResponse } from "../jsx/render";
+import { Suspense } from "../jsx/suspense";
 
 const app = new Elysia()
   .get("/", () =>
@@ -11,9 +11,16 @@ const app = new Elysia()
       </Suspense>
     ))
   )
+  .get("/stream", () =>
+    renderToStreamResponse(() => (
+      <Suspense fallback={<p>loading...</p>}>
+        <Wait ms={1000} />
+      </Suspense>
+    ))
+  )
   .listen(3000);
 
-console.log("listening on http://localhost:3000");
+console.log(`listening on http://localhost:${app.server?.port}`);
 
 function wait(ms: number): Promise<number> {
   return new Promise((resolve) =>

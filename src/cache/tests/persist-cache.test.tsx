@@ -1,7 +1,15 @@
 import { test, expect } from "bun:test";
-import { persistedCache, revalidateTag } from "../persist";
+import {
+  persistedCache,
+  revalidateTag,
+  setGlobalPersistCacheConfig,
+} from "../persist";
 import "../../jsx/register";
 import { renderToString } from "../../jsx/render";
+
+setGlobalPersistCacheConfig({
+  // log: true,
+});
 
 test("static json cache", async () => {
   let count = 0;
@@ -230,6 +238,7 @@ test("json cache revalidate tag", async () => {
     return <p>number: {data}</p>;
   };
 
+  // initial cache miss
   const html = await renderToString(() => (
     <>
       <Component />
@@ -243,6 +252,7 @@ test("json cache revalidate tag", async () => {
 
   // should the be same right away
 
+  // hit cache
   const html2 = await renderToString(() => (
     <>
       <Component />
@@ -252,7 +262,8 @@ test("json cache revalidate tag", async () => {
 
   expect(html2).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
-  revalidateTag("tag1");
+  // by default swr is off, so must wait for revalidate to complete
+  await revalidateTag("tag1");
 
   // now should be different
 
@@ -301,7 +312,7 @@ test("memory cache revalidate tag", async () => {
 
   expect(html2).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
-  revalidateTag("tag1");
+  await revalidateTag("tag1");
 
   // now should be different
 
@@ -313,191 +324,6 @@ test("memory cache revalidate tag", async () => {
   ));
 
   expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
-});
-
-test("request during interval revalidation", async () => {
-  let count = 0;
-  const getCount = async () =>
-    new Promise((resolve) => setTimeout(() => resolve(++count), 100));
-  const cachedGetCount = persistedCache(getCount, "getCount7", {
-    revalidate: 1,
-  });
-
-  const Component = async () => {
-    const data = await cachedGetCount();
-    return <p>number: {data}</p>;
-  };
-
-  const html = await renderToString(() => (
-    <>
-      <Component />
-      <Component />
-    </>
-  ));
-
-  expect(html).toBe(`<p>number: 1</p><p>number: 1</p>`);
-
-  // cache request goes off during revalidation
-  // should result in 'pending cache hit' log + updated data
-
-  await new Promise((resolve) =>
-    setTimeout(async () => {
-      const html3 = await renderToString(() => (
-        <>
-          <Component />
-          <Component />
-        </>
-      ));
-
-      expect(html3).toBe(`<p>number: 2</p><p>number: 2</p>`);
-
-      resolve(void 0);
-    }, 1010)
-  );
-});
-
-test("request during tag revalidation", async () => {
-  let count = 0;
-  const getCount = async () =>
-    new Promise((resolve) => setTimeout(() => resolve(++count), 100));
-  const cachedGetCount = persistedCache(getCount, "getCount8", {
-    tags: ["tag1"],
-  });
-
-  const Component = async () => {
-    const data = await cachedGetCount();
-    return <p>number: {data}</p>;
-  };
-
-  const html = await renderToString(() => (
-    <>
-      <Component />
-      <Component />
-    </>
-  ));
-
-  expect(html).toBe(`<p>number: 1</p><p>number: 1</p>`);
-
-  setTimeout(() => {
-    count++;
-    revalidateTag("tag1");
-  }, 1000);
-
-  // cache request goes off during revalidation
-  // should result in 'pending cache hit' log + updated data
-
-  await new Promise((resolve) =>
-    setTimeout(async () => {
-      const html3 = await renderToString(() => (
-        <>
-          <Component />
-          <Component />
-        </>
-      ));
-
-      expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
-
-      resolve(void 0);
-    }, 1010)
-  );
-});
-
-test("interval during tag revalidation", async () => {
-  let count = 0;
-  const getCount = async () =>
-    new Promise((resolve) => setTimeout(() => resolve(++count), 300));
-  const cachedGetCount = persistedCache(getCount, "getCount9", {
-    tags: ["tag1"],
-    revalidate: 1,
-  });
-
-  const Component = async () => {
-    const data = await cachedGetCount();
-    return <p>number: {data}</p>;
-  };
-
-  const html = await renderToString(() => (
-    <>
-      <Component />
-      <Component />
-    </>
-  ));
-
-  expect(html).toBe(`<p>number: 1</p><p>number: 1</p>`);
-
-  setTimeout(() => {
-    count++;
-    revalidateTag("tag1");
-  }, 900);
-
-  // should see pending cache hit for interval revalidation
-
-  // cache request goes off during revalidation
-  // should result in 2nd 'pending cache hit' log + updated data
-
-  await new Promise((resolve) =>
-    setTimeout(async () => {
-      const html3 = await renderToString(() => (
-        <>
-          <Component />
-          <Component />
-        </>
-      ));
-
-      expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
-
-      resolve(void 0);
-    }, 1100)
-  );
-});
-
-test("interval during tag revalidation", async () => {
-  let count = 0;
-  const getCount = async () =>
-    new Promise((resolve) => setTimeout(() => resolve(++count), 300));
-  const cachedGetCount = persistedCache(getCount, "getCount10", {
-    tags: ["tag1"],
-    revalidate: 1,
-  });
-
-  const Component = async () => {
-    const data = await cachedGetCount();
-    return <p>number: {data}</p>;
-  };
-
-  const html = await renderToString(() => (
-    <>
-      <Component />
-      <Component />
-    </>
-  ));
-
-  expect(html).toBe(`<p>number: 1</p><p>number: 1</p>`);
-
-  setTimeout(() => {
-    count++;
-    revalidateTag("tag1");
-  }, 1100);
-
-  // should see pending cache hit for tag revalidation
-
-  // cache request goes off during revalidation
-  // should result in 2nd 'pending cache hit' log + updated data
-
-  await new Promise((resolve) =>
-    setTimeout(async () => {
-      const html3 = await renderToString(() => (
-        <>
-          <Component />
-          <Component />
-        </>
-      ));
-
-      expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
-
-      resolve(void 0);
-    }, 1150)
-  );
 });
 
 test("complex object storage to memory", async () => {

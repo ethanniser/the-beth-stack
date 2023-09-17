@@ -22,6 +22,7 @@ class BethPersistCache {
   private jsonDataCache: Database;
   private intervals: Set<Timer>;
   private keys: Set<string>;
+  private inInitialLoad: Set<string>;
   private config: {
     log: boolean;
     defaultCacheOptions: Required<CacheOptions>;
@@ -37,6 +38,7 @@ class BethPersistCache {
     this.intervals = new Set();
     this.pendingMap = new Map();
     this.keys = new Set();
+    this.inInitialLoad = new Set();
     this.config = {
       log: false,
       defaultCacheOptions: {
@@ -55,11 +57,20 @@ class BethPersistCache {
     `);
   }
 
-  public setConfig(config: Partial<typeof this.config>) {
-    this.config = {
-      ...this.config,
-      ...config,
+  public setConfig(config: {
+    log?: boolean;
+    defaultCacheOptions?: CacheOptions;
+    returnStaleWhileRevalidate?: boolean;
+  }) {
+    this.config.defaultCacheOptions = {
+      ...this.config.defaultCacheOptions,
+      ...config.defaultCacheOptions,
     };
+
+    this.config.log = config.log ?? this.config.log;
+    this.config.returnStaleWhileRevalidate =
+      config.returnStaleWhileRevalidate ??
+      this.config.returnStaleWhileRevalidate;
   }
 
   private setJsonCache(key: string, value: any) {
@@ -74,11 +85,17 @@ class BethPersistCache {
   }
 
   private getJsonCache(key: string) {
-    if (this.config.log) console.log("JSON Cache HIT:", key);
     const result = this.jsonDataCache
       .query("SELECT value FROM cache WHERE key = ?")
       .get(key) as { value: string } | undefined;
-    if (!result) throw new Error("JSON Cache Miss");
+    if (!result) {
+      if (this.config.log)
+        console.log(
+          "No entry found in memory cache when one was expected:",
+          key
+        );
+      throw new Error("JSON Cache Miss");
+    }
     return JSON.parse(result.value);
   }
 
@@ -108,19 +125,22 @@ class BethPersistCache {
       this.keys.add(key);
     }
 
-    if (this.config.log) console.log("Cache MISS: ", key);
+    if (this.config.log)
+      console.log("Initial Callback run to seed cache: ", key);
 
     const promise = callBack();
+    this.inInitialLoad.add(key);
     this.pendingMap.set(key, promise);
 
     promise.then((value) => {
-      this.pendingMap.delete(key);
       if (this.config.log) console.log(`Seeding ${location} Cache:`, key);
       if (location === "memory") {
         this.inMemoryDataCache.set(key, value);
       } else if (location === "json") {
         this.setJsonCache(key, value);
       }
+      this.inInitialLoad.delete(key);
+      this.pendingMap.delete(key);
       this.callBackMap.set(key, {
         callBack,
         tags,
@@ -148,6 +168,8 @@ class BethPersistCache {
     const callBackPromise = callBack();
     this.pendingMap.set(key, callBackPromise);
     callBackPromise.then((value) => {
+      if (this.config.log)
+        console.log(`Callback complete, setting ${location} cache:`, key);
       if (location === "memory") {
         this.inMemoryDataCache.set(key, value);
       } else if (location === "json") {
@@ -181,34 +203,70 @@ class BethPersistCache {
   private getMemoryCache(key: string) {
     const cacheResult = this.inMemoryDataCache.get(key);
     if (cacheResult) {
-      if (this.config.log) console.log("Memory Cache HIT:", key);
       return cacheResult;
     } else {
+      if (this.config.log)
+        console.log(
+          "No entry found in memory cache when one was expected:",
+          key
+        );
       throw new Error("Memory Cache Miss");
     }
   }
 
-  public revalidateTag(tag: string) {
+  public async revalidateTag(tag: string): Promise<void> {
     if (this.config.log) console.log("Revalidating tag:", tag);
+    const revalidatePromises: Promise<void>[] = [];
     this.callBackMap.forEach((value, key) => {
       if (value.tags.includes(tag)) {
-        this.rerunCallBack(key);
+        const done = this.rerunCallBack(key);
+        revalidatePromises.push(done);
       }
     });
+    return Promise.all(revalidatePromises).then(() => void 0);
   }
 
   public getCachedValue(key: string, cache: "memory" | "json") {
     try {
+      // if SWR is turned off, and the revalidation is in progress, return the pending promise
+      // even if SWR is on, during the initial load, we have nothing else to return
       const pending = this.pendingMap.get(key);
-      if (pending) {
-        if (this.config.log) console.log("PENDING CACHE HIT:", key);
-        return pending;
-      }
+      const inInitialLoad = this.inInitialLoad.has(key);
+      const SWR = this.config.returnStaleWhileRevalidate;
 
-      if (cache === "memory") {
-        return this.getMemoryCache(key);
-      } else if (cache === "json") {
-        return this.getJsonCache(key);
+      // console.log("DEBUG", { pending, inInitialLoad, SWR });
+
+      if (pending && inInitialLoad) {
+        // if we are in the initial load, we have nothing else to return except the pending promise
+        if (this.config.log) console.log("Hit Initial Load Pending:", key);
+        return pending;
+      } else if (pending && !SWR) {
+        // if revalidation is in progress, and SWR is turned off, return the pending promise
+        if (this.config.log) console.log("Pending Cache HIT:", key);
+        return pending;
+      } else {
+        // at this point either we are either just at a standard cache hit
+        // or a stale hit (if SWR is turned on)
+        // so we can return the cached value, and log based off pending (if it exists its a stale hit)
+        if (cache === "memory") {
+          if (this.config.log) {
+            if (pending) {
+              console.log(`Memory Cache STALE HIT:`, key);
+            } else {
+              console.log(`Memory Cache HIT:`, key);
+            }
+          }
+          return this.getMemoryCache(key);
+        } else if (cache === "json") {
+          if (this.config.log) {
+            if (pending) {
+              console.log(`JSON Cache STALE HIT:`, key);
+            } else {
+              console.log(`JSON Cache HIT:`, key);
+            }
+          }
+          return this.getJsonCache(key);
+        }
       }
     } catch (e) {
       if (e instanceof Error) {
@@ -252,6 +310,15 @@ export function persistedCache<T extends () => Promise<any>>(
   ) as T;
 }
 
-export function revalidateTag(tag: string) {
-  GLOBAL_CACHE.revalidateTag(tag);
+// returns promise that resolves when all data with the tag have completed revalidation
+export async function revalidateTag(tag: string): Promise<void> {
+  return GLOBAL_CACHE.revalidateTag(tag);
+}
+
+export function setGlobalPersistCacheConfig(config: {
+  log?: boolean;
+  defaultCacheOptions?: CacheOptions;
+  returnStaleWhileRevalidate?: boolean;
+}) {
+  GLOBAL_CACHE.setConfig(config);
 }

@@ -1,7 +1,7 @@
 import Elysia from "elysia";
 import "../register";
 import "../htmx";
-import { renderToString, renderToStream, baseHtml } from "../render";
+import { renderToString, renderToStream } from "../render";
 import { Suspense } from "../suspense";
 
 function wait(ms: number): Promise<number> {
@@ -59,10 +59,6 @@ const App2 = () => (
 const app = new Elysia()
   .get("/", () => renderToStream(() => <App />))
   .get("/2", () => renderToStream(() => <App2 />))
-  .get("/blocking", async () => {
-    const result = await renderToString(() => <App />);
-    return baseHtml + result + "</body></html>";
-  })
   .get("/foo", () => renderToString(() => <Foo />))
   .listen(3000);
 

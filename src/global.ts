@@ -39,7 +39,6 @@ class BethGlobalStore {
 
   public checkIfEnd() {
     if (this.suspenseMap.size === 0) {
-      this.streamController?.enqueue("</body></html>");
       this.streamController?.close();
     }
   }

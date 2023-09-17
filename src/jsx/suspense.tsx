@@ -1,4 +1,4 @@
-import { BETH_GLOBAL } from "./global";
+import { BETH_GLOBAL } from "../shared/global";
 
 const swapScript = `
   <script>

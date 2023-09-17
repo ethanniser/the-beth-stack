@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test";
 import { persistedCache, revalidateTag } from "../persist";
 import "../register";
-import { renderToString } from "..";
+import { renderToString } from "../../jsx/render";
 
 test("static json cache", async () => {
   let count = 0;

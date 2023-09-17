@@ -1,4 +1,4 @@
-import { Children } from ".";
+import { Children } from "../jsx";
 
 class BethGlobalStore {
   public dedupeCache: WeakMap<Function, Map<Array<any>, any>>;

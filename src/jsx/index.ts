@@ -4,8 +4,8 @@
 /// <reference path="./jsx.d.ts" />
 
 import { attributesToString, contentsToString, isVoidElement } from "./utils";
-import { Suspense } from "./suspense";
-import { BETH_GLOBAL } from "./global";
+import { Suspense } from "../jsx/suspense";
+import { BETH_GLOBAL } from "../shared/global";
 
 type Children =
   | number
@@ -215,8 +215,3 @@ export {
   AsyncComponent,
   SyncComponent,
 };
-
-export { cache } from "./cache";
-export { persistedCache, revalidateTag } from "./persist";
-export { renderToString, renderToStream } from "./render";
-export { Suspense } from "./suspense";

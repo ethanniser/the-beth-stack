@@ -1,4 +1,4 @@
-import { BETH_GLOBAL } from "./global";
+import { BETH_GLOBAL } from "../shared/global";
 
 type Args<T> = T extends (...args: infer U) => any ? U : never;
 

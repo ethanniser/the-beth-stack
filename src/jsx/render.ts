@@ -9,9 +9,31 @@ export async function renderToString<T extends () => JSX.Element>(
   return resultPromise;
 }
 
-export function renderToStream<T extends () => JSX.Element>(
+export async function renderToStringResponse<T extends () => JSX.Element>(
+  lazyHtml: T
+): Promise<Response> {
+  const result = await renderToString(lazyHtml);
+  return new Response(result, {
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+    },
+  });
+}
+
+export function renderToStreamResponse<T extends () => JSX.Element>(
   lazyHtml: T
 ): Response {
+  const stream = renderToStream(lazyHtml);
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+    },
+  });
+}
+
+export function renderToStream<T extends () => JSX.Element>(
+  lazyHtml: T
+): ReadableStream<string> {
   BETH_GLOBAL.reset();
   const stream = new ReadableStream<string>({
     start(c) {
@@ -30,7 +52,5 @@ export function renderToStream<T extends () => JSX.Element>(
     },
   });
 
-  return new Response(stream, {
-    headers: { "Content-Type": "text/html" },
-  });
+  return stream;
 }

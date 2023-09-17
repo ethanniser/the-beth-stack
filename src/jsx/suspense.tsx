@@ -1,25 +1,24 @@
 import { BETH_GLOBAL } from "../shared/global";
 
-const swapScript = `
+export const swapScript = `
   <script>
-$RC = function(newId, oldId) {
-    let newContentTemplate = document.querySelector(\`template[id="\${newId}"][data-replace]\`);
-    let oldFallbackDiv = document.querySelector(\`div[id="\${oldId}"][data-fallback]\`);
+    $RC = function(newId, oldId) {
+      let newContentTemplate = document.querySelector(\`template[id="\${newId}"][data-replace]\`);
+      let oldFallbackDiv = document.querySelector(\`div[id="\${oldId}"][data-fallback]\`);
 
-    if (!newContentTemplate || !oldFallbackDiv) return;
+      if (!newContentTemplate || !oldFallbackDiv) return;
 
-    let fragment = document.createDocumentFragment();
-    while (newContentTemplate.content.firstChild) {
-        fragment.appendChild(newContentTemplate.content.firstChild);
-    }
-    
-    // Replace the entire oldFallbackDiv with the new content
-    oldFallbackDiv.parentNode.replaceChild(fragment, oldFallbackDiv);
+      let fragment = document.createDocumentFragment();
+      while (newContentTemplate.content.firstChild) {
+          fragment.appendChild(newContentTemplate.content.firstChild);
+      }
+      
+      // Replace the entire oldFallbackDiv with the new content
+      oldFallbackDiv.parentNode.replaceChild(fragment, oldFallbackDiv);
 
-    // Remove the newContentTemplate
-    newContentTemplate.remove();
-};
-
+      // Remove the newContentTemplate
+      newContentTemplate.remove();
+    };
   </script>
 `;
 

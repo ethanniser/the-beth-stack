@@ -3,35 +3,23 @@ import { BETH_GLOBAL } from "./global";
 const swapScript = `
   <script>
 $RC = function(newId, oldId) {
-    let newContentDiv = document.getElementById(newId);
-    let oldTemplate = document.getElementById(oldId);
+    let newContentTemplate = document.querySelector(\`template[id="\${newId}"][data-replace]\`);
+    let oldFallbackDiv = document.querySelector(\`div[id="\${oldId}"][data-fallback]\`);
 
-    // Check for existence of both elements
-    if (!newContentDiv || !oldTemplate) return;
+    if (!newContentTemplate || !oldFallbackDiv) return;
 
-    // Start from the next sibling of the template to find the fallback content
-    let currentNode = oldTemplate.nextSibling;
-
-    // Iterate and remove nodes until the <!--/$--> comment is found
-    while (currentNode) {
-        if (currentNode.nodeType === 8 && currentNode.data === "/$") {
-            // Found the ending comment; break out of the loop
-            break;
-        }
-        let nextNode = currentNode.nextSibling;
-        currentNode.remove();
-        currentNode = nextNode;
+    let fragment = document.createDocumentFragment();
+    while (newContentTemplate.content.firstChild) {
+        fragment.appendChild(newContentTemplate.content.firstChild);
     }
+    
+    // Replace the entire oldFallbackDiv with the new content
+    oldFallbackDiv.parentNode.replaceChild(fragment, oldFallbackDiv);
 
-    // Directly insert the children of newContentDiv (to unwrap the div)
-    while (newContentDiv.firstChild) {
-        oldTemplate.parentNode.insertBefore(newContentDiv.firstChild, oldTemplate.nextSibling);
-    }
+    // Remove the newContentTemplate
+    newContentTemplate.remove();
+};
 
-    // Remove the newContentDiv wrapper and the old template
-    newContentDiv.remove();
-    oldTemplate.remove();
-  };
   </script>
 `;
 
@@ -65,9 +53,9 @@ export async function Suspense({
       const content = childrenContent.join("");
 
       let withScript = `
-        <div hidden id="N:${id}">
+        <template id="N:${id}" data-replace>
             ${content}
-        </div>
+        </template>
         <script>
             $RC("N:${id}", "B:${id}");
         </script>

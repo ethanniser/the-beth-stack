@@ -122,6 +122,8 @@ describe("async components", () => {
 
     data++;
 
+    // if we don't reset cache with 'renderToString' then we get the same results
+
     const html2 = await (
       <>
         <Component />
@@ -131,9 +133,12 @@ describe("async components", () => {
 
     expect(html2).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
+    // lazy evaluation means we get the new data (because it doesnt go off until inside renderToString)
+    const Test = () => <Component />;
+
     const html3 = await renderToString(() => (
       <>
-        <Component />
+        <Test />
         <Component />
       </>
     ));

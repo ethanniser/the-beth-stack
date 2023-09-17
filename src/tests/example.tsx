@@ -37,8 +37,28 @@ const App = () => (
   </div>
 );
 
+const App2 = () => (
+  <div>
+    <p>I am sent immediately</p>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Wait ms={1000} />
+      <div>hello</div>
+    </Suspense>
+    <p>hey me too!</p>
+    <Suspense fallback={<div>loading 2...</div>}>
+      <Wait ms={2000} />
+      <div>hello two!</div>
+      <Suspense fallback={<div>loading 3...</div>}>
+        <Wait ms={3000} />
+        <div>hello three!</div>
+      </Suspense>
+    </Suspense>
+  </div>
+);
+
 const app = new Elysia()
   .get("/", () => renderToStream(() => <App />))
+  .get("/2", () => renderToStream(() => <App2 />))
   .get("/blocking", async () => {
     const result = await renderToString(() => <App />);
     return baseHtml + result + "</body></html>";

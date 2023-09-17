@@ -51,10 +51,9 @@ async function createElement(
 
     if (attributes !== null && "fallback" in attributes) {
       attributes.fallback = `
-        <!--$?-->
-        <template id="B:${id}"></template>
-        <div>${await attributes.fallback}</div>
-        <!--/$-->
+        <div id="B:${id}" data-fallback>
+        ${await attributes.fallback}
+        </div>
       `;
     }
   } else {

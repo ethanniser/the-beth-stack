@@ -1,7 +1,8 @@
 {
   "name": "beth-stack",
-  "module": "src/index.ts",
+  "version": "0.0.1",
   "type": "module",
+  "bin": "src/cli/index.ts",
   "exports": {
     "./jsx": "./src/jsx/index.ts",
     "./jsx/register": "./src/jsx/register.ts",

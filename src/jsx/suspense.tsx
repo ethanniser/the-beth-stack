@@ -1,4 +1,4 @@
-import { BETH_GLOBAL } from "../shared/global";
+import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 
 export const swapScript = `
   <script>
@@ -44,9 +44,11 @@ export async function Suspense({
   const suspended = Promise.all(children);
   suspended.then((childrenContent) => {
     setTimeout(() => {
-      const id = BETH_GLOBAL.dismissChild(children);
+      const id = BETH_GLOBAL_RENDER_CACHE.dismissChild(children);
       if (!id) {
-        BETH_GLOBAL.streamController?.error("Suspense children not found");
+        BETH_GLOBAL_RENDER_CACHE.streamController?.error(
+          "Suspense children not found"
+        );
         throw new Error("Suspense children not found");
       }
       const content = childrenContent.join("");
@@ -60,14 +62,14 @@ export async function Suspense({
         </script>
     `;
 
-      if (!BETH_GLOBAL.sentFirstChunk) {
+      if (!BETH_GLOBAL_RENDER_CACHE.sentFirstChunk) {
         withScript = swapScript + withScript;
-        BETH_GLOBAL.sentFirstChunk = true;
+        BETH_GLOBAL_RENDER_CACHE.sentFirstChunk = true;
       }
 
-      BETH_GLOBAL.streamController?.enqueue(withScript);
+      BETH_GLOBAL_RENDER_CACHE.streamController?.enqueue(withScript);
 
-      BETH_GLOBAL.checkIfEndAndClose();
+      BETH_GLOBAL_RENDER_CACHE.checkIfEndAndClose();
     }, 0);
   });
   return fallback;

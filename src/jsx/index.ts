@@ -5,7 +5,7 @@
 
 import { attributesToString, contentsToString, isVoidElement } from "./utils";
 import { Suspense } from "../jsx/suspense";
-import { BETH_GLOBAL } from "../shared/global";
+import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 
 type Children =
   | number
@@ -40,14 +40,15 @@ async function createElement(
     false
   );
 
-  const insideStreamCall = BETH_GLOBAL.streamController !== undefined;
+  const insideStreamCall =
+    BETH_GLOBAL_RENDER_CACHE.streamController !== undefined;
 
   if (
     name === Suspense &&
     hasAnyUnresolvedPromiseChildren &&
     insideStreamCall
   ) {
-    const id = BETH_GLOBAL.registerChild(children);
+    const id = BETH_GLOBAL_RENDER_CACHE.registerChild(children);
 
     if (attributes !== null && "fallback" in attributes) {
       attributes.fallback = `

@@ -1,4 +1,5 @@
-import { BETH_GLOBAL } from "../shared/global";
+import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
+import { Children } from "../jsx";
 
 type Args<T> = T extends (...args: infer U) => any ? U : never;
 
@@ -18,9 +19,9 @@ export function cache<T extends (...args: any[]) => any>(
   compareFn: (oldArgs: Args<T>, newArgs: Args<T>) => boolean = defaultCompare
 ): T {
   return ((...args: Args<T>) => {
-    const cached = BETH_GLOBAL.dedupeCache.get(fn) || new Map();
+    const cached = BETH_GLOBAL_RENDER_CACHE.dedupeCache.get(fn) || new Map();
 
-    BETH_GLOBAL.dedupeCache.set(fn, cached);
+    BETH_GLOBAL_RENDER_CACHE.dedupeCache.set(fn, cached);
 
     for (let [keyArgs, valueOrPromise] of cached.entries()) {
       if (compareFn(args, keyArgs)) {
@@ -33,4 +34,53 @@ export function cache<T extends (...args: any[]) => any>(
 
     return functionResult;
   }) as T;
+}
+
+export class BethRenderCache {
+  public dedupeCache: WeakMap<Function, Map<Array<any>, any>>;
+  public streamController: ReadableStreamDefaultController<string> | undefined;
+  public counter: number;
+  private suspenseMap: Map<Children, number>;
+  public sentFirstChunk: boolean;
+
+  constructor() {
+    this.dedupeCache = new WeakMap();
+    this.streamController = undefined;
+    this.counter = 1;
+    this.suspenseMap = new Map();
+    this.sentFirstChunk = false;
+  }
+
+  public reset() {
+    this.dedupeCache = new WeakMap();
+    this.streamController = undefined;
+    this.counter = 1;
+    this.suspenseMap = new Map();
+    this.sentFirstChunk = false;
+  }
+
+  public registerChild(child: Children[]): number {
+    const id = this.counter++;
+    this.suspenseMap.set(child, id);
+    return id;
+  }
+
+  public dismissChild(child: Children[]): number | undefined {
+    const id = this.suspenseMap.get(child);
+    if (id) {
+      this.suspenseMap.delete(child);
+    }
+    return id;
+  }
+
+  public closeNow() {
+    this.streamController?.close();
+    this.reset();
+  }
+
+  public checkIfEndAndClose() {
+    if (this.suspenseMap.size === 0) {
+      this.closeNow();
+    }
+  }
 }

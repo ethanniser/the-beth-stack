@@ -11,7 +11,8 @@
   },
   "scripts": {
     "go": "bun run --hot src/tests/example.tsx",
-    "typecheck": "bunx --bun tsc"
+    "typecheck": "bunx --bun tsc",
+    "test": "bun test"
   },
   "devDependencies": {
     "bun-types": "latest"

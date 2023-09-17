@@ -1,6 +1,40 @@
 import { cache } from "./cache";
 import { Database } from "bun:sqlite";
 import { unlinkSync } from "node:fs";
+import { BETH_GLOBAL_PERSISTED_CACHE } from "../shared/global";
+
+export function persistedCache<T extends () => Promise<any>>(
+  callBack: T,
+  key: string,
+  options?: CacheOptions
+): T {
+  const filledOptions = {
+    ...BETH_GLOBAL_PERSISTED_CACHE.getDefaultOptions(),
+    ...options,
+  };
+
+  BETH_GLOBAL_PERSISTED_CACHE.seed({
+    callBack,
+    key,
+    options: filledOptions,
+  });
+  return cache(() =>
+    BETH_GLOBAL_PERSISTED_CACHE.getCachedValue(key, filledOptions.persist)
+  ) as T;
+}
+
+// returns promise that resolves when all data with the tag have completed revalidation
+export async function revalidateTag(tag: string): Promise<void> {
+  return BETH_GLOBAL_PERSISTED_CACHE.revalidateTag(tag);
+}
+
+export function setGlobalPersistCacheConfig(config: {
+  log?: boolean;
+  defaultCacheOptions?: CacheOptions;
+  returnStaleWhileRevalidate?: boolean;
+}) {
+  BETH_GLOBAL_PERSISTED_CACHE.setConfig(config);
+}
 
 type CacheOptions = {
   persist?: "memory" | "json";
@@ -8,7 +42,7 @@ type CacheOptions = {
   tags?: string[];
 };
 
-class BethPersistCache {
+export class BethPersistCache {
   private callBackMap: Map<
     string,
     {
@@ -286,39 +320,4 @@ class BethPersistCache {
   public getDefaultOptions() {
     return this.config.defaultCacheOptions;
   }
-}
-
-const GLOBAL_CACHE = new BethPersistCache();
-
-export function persistedCache<T extends () => Promise<any>>(
-  callBack: T,
-  key: string,
-  options?: CacheOptions
-): T {
-  const filledOptions = {
-    ...GLOBAL_CACHE.getDefaultOptions(),
-    ...options,
-  };
-
-  GLOBAL_CACHE.seed({
-    callBack,
-    key,
-    options: filledOptions,
-  });
-  return cache(() =>
-    GLOBAL_CACHE.getCachedValue(key, filledOptions.persist)
-  ) as T;
-}
-
-// returns promise that resolves when all data with the tag have completed revalidation
-export async function revalidateTag(tag: string): Promise<void> {
-  return GLOBAL_CACHE.revalidateTag(tag);
-}
-
-export function setGlobalPersistCacheConfig(config: {
-  log?: boolean;
-  defaultCacheOptions?: CacheOptions;
-  returnStaleWhileRevalidate?: boolean;
-}) {
-  GLOBAL_CACHE.setConfig(config);
 }

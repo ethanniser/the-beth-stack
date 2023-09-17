@@ -1,11 +1,13 @@
 {
-  "name": "beth-jsx",
+  "name": "beth",
   "module": "src/index.ts",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./register": "./src/register.ts",
-    "./htmx": "./src/htmx.ts"
+    "./jsx": "./src/jsx/index.ts",
+    "./jsx/register": "./src/jsx/register.ts",
+    "./jsx/htmx": "./src/jsx/htmx.ts",
+    "./cache": "./src/cache/index.ts",
+    "./elysia": "./src/elysia/index.ts"
   },
   "scripts": {
     "go": "bun run --hot src/tests/example.tsx",

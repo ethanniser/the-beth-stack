@@ -215,3 +215,11 @@ export {
   AsyncComponent,
   SyncComponent,
 };
+
+export { Suspense } from "./suspense";
+export {
+  renderToStream,
+  renderToStreamResponse,
+  renderToString,
+  renderToStringResponse,
+} from "./render";

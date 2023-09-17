@@ -15,6 +15,15 @@ class BethPersistCache {
   private jsonDataCache: Database;
   private intervals: Set<Timer>;
   private keys: Set<string>;
+  private config: {
+    log: boolean;
+    defaultCacheOptions: {
+      persist: "json" | "memory";
+      revalidate: number;
+      tags: string[];
+    };
+    returnStaleWhileRevalidate: boolean;
+  };
 
   constructor() {
     this.callBackMap = new Map();
@@ -23,6 +32,15 @@ class BethPersistCache {
     this.intervals = new Set();
     this.pendingMap = new Map();
     this.keys = new Set();
+    this.config = {
+      log: false,
+      defaultCacheOptions: {
+        persist: "json",
+        revalidate: Infinity,
+        tags: [],
+      },
+      returnStaleWhileRevalidate: true,
+    };
 
     this.jsonDataCache.run(`
       DROP TABLE IF EXISTS cache;
@@ -48,7 +66,7 @@ class BethPersistCache {
   }
 
   private getJsonCache(key: string) {
-    console.log("JSON Cache HIT:", key);
+    if (this.config.log) console.log("JSON Cache HIT:", key);
     const result = this.jsonDataCache
       .query("SELECT value FROM cache WHERE key = ?")
       .get(key) as { value: string } | undefined;
@@ -77,12 +95,14 @@ class BethPersistCache {
       this.keys.add(key);
     }
 
+    if (this.config.log) console.log("Cache MISS: ", key);
+
     const promise = callBack();
     this.pendingMap.set(key, promise);
 
     promise.then((value) => {
       this.pendingMap.delete(key);
-      console.log(`Seeding ${cache} Cache:`, key);
+      if (this.config.log) console.log(`Seeding ${cache} Cache:`, key);
       if (cache === "memory") {
         this.inMemoryDataCache.set(key, value);
       } else if (cache === "json") {
@@ -102,11 +122,11 @@ class BethPersistCache {
   private rerunCallBack(key: string) {
     const pending = this.pendingMap.get(key);
     if (pending) {
-      console.log("PENDING CACHE HIT:", key);
+      if (this.config.log) console.log("PENDING CACHE HIT:", key);
       return pending;
     }
 
-    console.log("rerunning callback:", key);
+    if (this.config.log) console.log("rerunning callback:", key);
     const result = this.callBackMap.get(key);
     if (!result) {
       throw new Error("No callback found for key: " + key);
@@ -132,21 +152,23 @@ class BethPersistCache {
 
   private setInterval(key: string, revalidate: number) {
     if (revalidate === Infinity) {
-      console.log("No revalidate interval for:", key);
+      if (this.config.log) console.log("No revalidate interval for:", key);
       return;
     }
     const interval = setInterval(() => {
-      console.log(`Cache Revalidating (on ${revalidate}s interval):`, key);
+      if (this.config.log)
+        console.log(`Cache Revalidating (on ${revalidate}s interval):`, key);
       this.rerunCallBack(key);
     }, revalidate * 1000);
-    console.log("Setting Revalidate Interval:", key, revalidate);
+    if (this.config.log)
+      console.log("Setting Revalidate Interval:", key, revalidate);
     this.intervals.add(interval);
   }
 
   private getMemoryCache(key: string) {
     const cacheResult = this.inMemoryDataCache.get(key);
     if (cacheResult) {
-      console.log("Memory Cache HIT:", key);
+      if (this.config.log) console.log("Memory Cache HIT:", key);
       return cacheResult;
     } else {
       throw new Error("Memory Cache Miss");
@@ -154,7 +176,7 @@ class BethPersistCache {
   }
 
   public revalidateTag(tag: string) {
-    console.log("Revalidating tag:", tag);
+    if (this.config.log) console.log("Revalidating tag:", tag);
     this.callBackMap.forEach((value, key) => {
       if (value.tags.includes(tag)) {
         this.rerunCallBack(key);
@@ -166,7 +188,7 @@ class BethPersistCache {
     try {
       const pending = this.pendingMap.get(key);
       if (pending) {
-        console.log("PENDING CACHE HIT:", key);
+        if (this.config.log) console.log("PENDING CACHE HIT:", key);
         return pending;
       }
 
@@ -208,7 +230,6 @@ export function persistedCache<T extends () => Promise<any>>(
   const revalidate = options?.revalidate ?? Infinity;
   const tags = options?.tags ?? [];
 
-  console.log("Cache MISS: ", key);
   GLOBAL_CACHE.seed({
     callBack,
     key,

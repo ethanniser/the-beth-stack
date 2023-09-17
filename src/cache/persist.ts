@@ -13,7 +13,6 @@ export type GlobalCacheConfig = {
   log: boolean;
   defaultCacheOptions: Required<CacheOptions>;
   returnStaleWhileRevalidate: boolean;
-  dev: boolean;
 };
 
 export function persistedCache<T extends () => Promise<any>>(
@@ -79,7 +78,6 @@ export class BethPersistCache {
         tags: [],
       },
       returnStaleWhileRevalidate: true,
-      dev: false,
     };
 
     unlinkSync("beth-cache.sqlite");

@@ -1,13 +1,15 @@
 {
   "name": "beth-stack",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "type": "module",
-  "bin": "src/cli/index.ts",
+  "bin": "src/cli/index.js",
   "exports": {
+    ".": "./src/index.ts",
     "./jsx": "./src/jsx/index.ts",
     "./jsx/register": "./src/jsx/register.ts",
     "./cache": "./src/cache/index.ts",
-    "./elysia": "./src/elysia/index.ts"
+    "./elysia": "./src/elysia/index.ts",
+    "./dev": "./src/dev/index.ts"
   },
   "scripts": {
     "go": "bun run --hot src/tests/example.tsx",
@@ -22,6 +24,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "elysia": "link:elysia"
+    "elysia": "./elysia-0.7.0-exp.0.tgz"
   }
 }

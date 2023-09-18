@@ -14,6 +14,8 @@ declare namespace JSX {
    * For examples and more information, visit:
    * https://github.com/frenic/csstype#what-should-i-do-when-i-get-type-errors
    */
+  // why does it remove the import string?????
+  // prettier-ignore
   type CSSProperties = import("csstype").Properties<string | number | boolean>;
 
   interface HtmlTag extends ElementChildrenAttribute, IntrinsicAttributes {

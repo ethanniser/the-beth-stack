@@ -9,14 +9,14 @@ const app = new Elysia()
       <Suspense fallback={<p>loading...</p>}>
         <Wait ms={1000} />
       </Suspense>
-    )),
+    ))
   )
   .get("/stream", () =>
     renderToStreamResponse(() => (
       <Suspense fallback={<p>loading...</p>}>
         <Wait ms={1000} />
       </Suspense>
-    )),
+    ))
   )
   .listen(3000);
 
@@ -26,7 +26,7 @@ function wait(ms: number): Promise<number> {
   return new Promise((resolve) =>
     setTimeout(() => {
       resolve(ms);
-    }, ms),
+    }, ms)
   );
 }
 

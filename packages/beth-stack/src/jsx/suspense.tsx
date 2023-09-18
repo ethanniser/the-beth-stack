@@ -34,7 +34,7 @@ export async function Suspense({
 
   const hasAnyUnresolvedPromiseChildren = children.reduce(
     (acc, child) => acc || Bun.peek.status(child) !== "fulfilled",
-    false,
+    false
   );
 
   if (!hasAnyUnresolvedPromiseChildren) {
@@ -47,7 +47,7 @@ export async function Suspense({
       const id = BETH_GLOBAL_RENDER_CACHE.dismissChild(children);
       if (!id) {
         BETH_GLOBAL_RENDER_CACHE.streamController?.error(
-          "Suspense children not found",
+          "Suspense children not found"
         );
         throw new Error("Suspense children not found");
       }

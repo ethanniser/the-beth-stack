@@ -1,7 +1,7 @@
 import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 
 export async function renderToString<T extends () => JSX.Element>(
-  lazyHtml: T,
+  lazyHtml: T
 ): JSX.Element {
   BETH_GLOBAL_RENDER_CACHE.reset();
   const resultPromise = lazyHtml();
@@ -10,7 +10,7 @@ export async function renderToString<T extends () => JSX.Element>(
 }
 
 export async function renderToStringResponse<T extends () => JSX.Element>(
-  lazyHtml: T,
+  lazyHtml: T
 ): Promise<Response> {
   const result = await renderToString(lazyHtml);
   return new Response(result, {
@@ -21,7 +21,7 @@ export async function renderToStringResponse<T extends () => JSX.Element>(
 }
 
 export function renderToStreamResponse<T extends () => JSX.Element>(
-  lazyHtml: T,
+  lazyHtml: T
 ): Response {
   const stream = renderToStream(lazyHtml);
   return new Response(stream, {
@@ -32,7 +32,7 @@ export function renderToStreamResponse<T extends () => JSX.Element>(
 }
 
 export function renderToStream<T extends () => JSX.Element>(
-  lazyHtml: T,
+  lazyHtml: T
 ): ReadableStream<string> {
   BETH_GLOBAL_RENDER_CACHE.reset();
   const stream = new ReadableStream<string>({

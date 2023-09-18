@@ -12,7 +12,7 @@ export function bethStack(options: Partial<BethPluginOptions> = {}) {
   setGlobalPersistCacheConfig(options);
 
   async function html<T extends () => JSX.Element>(
-    lazyHtml: T,
+    lazyHtml: T
   ): Promise<Response> {
     return renderToStringResponse(lazyHtml);
   }

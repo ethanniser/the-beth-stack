@@ -18,7 +18,7 @@ export type GlobalCacheConfig = {
 export function persistedCache<T extends () => Promise<any>>(
   callBack: T,
   key: string,
-  options?: CacheOptions,
+  options?: CacheOptions
 ): T {
   const filledOptions = {
     ...BETH_GLOBAL_PERSISTED_CACHE.getDefaultOptions(),
@@ -33,7 +33,7 @@ export function persistedCache<T extends () => Promise<any>>(
     });
   }
   return cache(() =>
-    BETH_GLOBAL_PERSISTED_CACHE.getCachedValue(key, filledOptions.persist),
+    BETH_GLOBAL_PERSISTED_CACHE.getCachedValue(key, filledOptions.persist)
   ) as T;
 }
 
@@ -43,7 +43,7 @@ export async function revalidateTag(tag: string): Promise<void> {
 }
 
 export function setGlobalPersistCacheConfig(
-  config: Partial<GlobalCacheConfig>,
+  config: Partial<GlobalCacheConfig>
 ) {
   BETH_GLOBAL_PERSISTED_CACHE.setConfig(config);
 }
@@ -114,7 +114,7 @@ export class BethPersistCache {
       VALUES (?, ?)
       ON CONFLICT (key) DO UPDATE SET value = excluded.value;
     `,
-      [key, JSON.stringify(value)],
+      [key, JSON.stringify(value)]
     );
   }
 
@@ -150,7 +150,7 @@ export class BethPersistCache {
 
     if (this.keys.has(key)) {
       throw new Error(
-        `Persistant Cache Key already exists: ${key} - these much be unqiue across your entire app`,
+        `Persistant Cache Key already exists: ${key} - these much be unqiue across your entire app`
       );
     } else {
       this.keys.add(key);
@@ -240,7 +240,7 @@ export class BethPersistCache {
       if (this.config.log)
         console.log(
           "No entry found in memory cache when one was expected:",
-          key,
+          key
         );
       throw new Error("Memory Cache Miss");
     }

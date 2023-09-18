@@ -135,7 +135,7 @@ test("json cache revalidate interval", async () => {
       expect(html3).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
       resolve(void 0);
-    }, 500),
+    }, 500)
   );
 
   // but after a second it should be different
@@ -152,7 +152,7 @@ test("json cache revalidate interval", async () => {
       expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
 
       resolve(void 0);
-    }, 1100),
+    }, 1100)
   );
 });
 
@@ -205,7 +205,7 @@ test("memory cache revalidate interval", async () => {
       expect(html3).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
       resolve(void 0);
-    }, 500),
+    }, 500)
   );
 
   // but after a second it should be different
@@ -222,7 +222,7 @@ test("memory cache revalidate interval", async () => {
       expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
 
       resolve(void 0);
-    }, 1100),
+    }, 1100)
   );
 });
 

@@ -27,9 +27,7 @@
     "dotenv": "latest",
     "prettier": "^2.8.8",
     "turbo": "^1.10.1",
-    "typescript": "^5.1.6"
-  },
-  "devDependencies": {
+    "typescript": "^5.1.6",
     "@total-typescript/ts-reset": "^0.5.1"
   }
 }

@@ -12,7 +12,7 @@ function wait(ms: number): Promise<number> {
   return new Promise((resolve) =>
     setTimeout(() => {
       resolve(ms);
-    }, ms),
+    }, ms)
   );
 }
 
@@ -102,7 +102,7 @@ test("renderToStream, doesn't resolve immediately", async () => {
 
   for await (const chunk of stream) {
     expect(chunk.replace(/[\s\n\t\r]+/g, "")).toBe(
-      expectedChunks[index]!.replace(/[\s\n\t\r]+/g, ""),
+      expectedChunks[index]!.replace(/[\s\n\t\r]+/g, "")
     );
     index++;
   }

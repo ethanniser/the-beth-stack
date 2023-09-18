@@ -6,7 +6,7 @@ let wsConnections = new Set<ElysiaWS<any, any>>();
 
 function dispatch() {
   wsConnections.forEach((connection) => {
-    console.log("sending refresh");
+    // console.log("sending refresh");
     connection.send("refresh");
   });
 }

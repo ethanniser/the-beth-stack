@@ -22,18 +22,17 @@ export function bethStack(options: Partial<BethPluginOptions> = {}) {
   }
 
   return function bethPlugin(app: Elysia) {
-    return app
-      .decorate("html", html)
-      .decorate("htmlStream", htmlStream)
-      .onRequest(() => {
-        BETH_GLOBAL_RENDER_CACHE.reset();
-        // elysia is weird idk
-        return void 0;
-      })
-      .onResponse(() => {
-        BETH_GLOBAL_RENDER_CACHE.reset();
-        // elysia is weird idk
-        return void 0;
-      });
+    return app.decorate("html", html).decorate("htmlStream", htmlStream);
+    // ! FIX WHEN ELYSIA IS FIXED
+    // .onRequest(() => {
+    //   BETH_GLOBAL_RENDER_CACHE.reset();
+    //   // elysia is weird idk
+    //   return void 0;
+    // })
+    // .onResponse(() => {
+    //   BETH_GLOBAL_RENDER_CACHE.reset();
+    //   // elysia is weird idk
+    //   return void 0;
+    // });
   };
 }

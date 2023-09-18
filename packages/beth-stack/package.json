@@ -12,10 +12,14 @@
     "./dev": "./src/dev/index.ts"
   },
   "scripts": {
-    "go": "bun run --hot src/tests/example.tsx",
     "typecheck": "bunx --bun tsc",
     "test": "bun test",
-    "build:cli": "bun run ./src/cli/build.ts"
+    "test:watch": "bun test --watch",
+    "build": "bun run ./src/cli/build.ts",
+    "clean": "rm -rf dist .turbo node_modules",
+    "lint": "eslint . --report-unused-disable-directives",
+    "lint:fix": "pnpm lint --fix",
+    "release": "changeset version"
   },
   "devDependencies": {
     "bun-types": "latest",

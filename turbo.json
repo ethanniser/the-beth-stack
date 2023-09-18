@@ -1,8 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
     "lint": {
-      "cache": false
+      "dependsOn": ["^build"],
+      "outputs": []
     },
     "lint:fix": {
       "cache": false
@@ -16,6 +21,14 @@
     "clean": {
       "cache": false
     },
-    "typecheck": {}
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "test:watch": {
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["build"]
+    }
   }
 }

@@ -1,8 +1,8 @@
 {
   "name": "beth-stack",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
-  "bin": "src/cli/index.js",
+  "bin": "./dist/cli/index.js",
   "exports": {
     ".": "./src/index.ts",
     "./jsx": "./src/jsx/index.ts",
@@ -14,7 +14,8 @@
   "scripts": {
     "go": "bun run --hot src/tests/example.tsx",
     "typecheck": "bunx --bun tsc",
-    "test": "bun test"
+    "test": "bun test",
+    "build:cli": "bun run ./src/cli/build.ts"
   },
   "devDependencies": {
     "bun-types": "latest",

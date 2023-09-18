@@ -1,5 +1,6 @@
+/// <reference types="./htmx.d.ts" />
+
 import idkHtml from ".";
-import "./htmx";
 
 globalThis.Html = idkHtml;
 

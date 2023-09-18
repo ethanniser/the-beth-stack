@@ -4,7 +4,6 @@ export const htmxExtensionScript = `
             onEvent: function (name, evt) {
               if (name === "htmx:configRequest") {
                 var revalidationTag = evt.srcElement.getAttribute("hx-revalidate");
-                console.log("revalidationTag", revalidationTag) 
                 if (revalidationTag) {
                   // Split the string into an array based on comma and trim spaces
                   var tags = revalidationTag.split(',').map(function(tag) {

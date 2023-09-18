@@ -1,9 +1,9 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
-import { Elysia } from "elysia";
+import { Elysia, ws } from "elysia";
 import { type ElysiaWS } from "elysia/ws";
 
-let wsConnections = new Set<ElysiaWS<any, any>>();
+let wsConnections = new Set<ElysiaWS<any>>();
 
 function dispatch() {
   wsConnections.forEach((connection) => {
@@ -15,6 +15,7 @@ function dispatch() {
 const port = process.argv[2] || 3001;
 
 const app = new Elysia()
+  .use(ws())
   .ws("/ws", {
     open(ws) {
       // console.log("open");

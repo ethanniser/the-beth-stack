@@ -4,7 +4,7 @@ const logs = await Bun.build({
   target: "bun",
   // splitting: true,
   // minify: true,
-  external: ["elysia"],
+  // external: ["elysia"],
 });
 
 if (!logs.success) {

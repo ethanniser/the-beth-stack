@@ -1,5 +1,4 @@
 import "../jsx/register";
-import "../jsx/htmx";
 import { type Elysia } from "elysia";
 import { setGlobalPersistCacheConfig } from "../cache";
 import { GlobalCacheConfig } from "../cache/persist";

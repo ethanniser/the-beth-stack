@@ -1,6 +1,6 @@
 {
   "name": "beth-stack",
-  "version": "0.0.8",
+  "version": "0.0.11",
   "type": "module",
   "bin": "./dist/cli/index.js",
   "exports": {
@@ -15,7 +15,8 @@
     "go": "bun run --hot src/tests/example.tsx",
     "typecheck": "bunx --bun tsc",
     "test": "bun test",
-    "build:cli": "bun run ./src/cli/build.ts"
+    "build:cli": "bun run ./src/cli/build.ts",
+    "reset-cache": "rm -rf /home/whatplan/.bun/install/cache && rm -rf node_modules && bun i"
   },
   "devDependencies": {
     "bun-types": "latest",
@@ -25,6 +26,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "elysia": "latest"
+    "elysia": "./elysia-0.7.0-exp.0.tgz"
   }
 }

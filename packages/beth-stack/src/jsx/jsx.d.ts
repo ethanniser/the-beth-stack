@@ -14,7 +14,7 @@ declare namespace JSX {
    * For examples and more information, visit:
    * https://github.com/frenic/csstype#what-should-i-do-when-i-get-type-errors
    */
-  type CSSProperties = import("csstype").Properties<string | number | boolean>;
+  type CSSProperties = import().Properties<string | number | boolean>;
 
   interface HtmlTag extends ElementChildrenAttribute, IntrinsicAttributes {
     accesskey?: undefined | string;

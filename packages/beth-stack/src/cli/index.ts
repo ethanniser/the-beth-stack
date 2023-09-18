@@ -34,5 +34,5 @@ const app = new Elysia()
   .listen(port);
 
 console.log(
-  `🦊 Livereload running ${app.server?.hostname}:${app.server?.port}`
+  `🦊 Livereload running ${app.server?.hostname}:${app.server?.port}`,
 );

@@ -1,4 +1,3 @@
-#!/usr/bin/env bun
 // @bun
 
 // node_modules/elysia/dist/bun/index.js
@@ -950,7 +949,7 @@ var f0 = H0((y6) => {
         : z.parameters.length > H.parameters.length
         ? C.False
         : !z.parameters.every(
-            (X0, u0) => W(z0(H.parameters[u0], X0)) === C.True
+            (X0, u0) => W(z0(H.parameters[u0], X0)) === C.True,
           )
         ? C.False
         : W(z0(z.returns, H.returns));
@@ -976,7 +975,7 @@ var f0 = H0((y6) => {
         : z.parameters.length > H.parameters.length
         ? C.False
         : !z.parameters.every(
-            (X0, u0) => W(z0(H.parameters[u0], X0)) === C.True
+            (X0, u0) => W(z0(H.parameters[u0], X0)) === C.True,
           )
         ? C.False
         : W(z0(z.returns, H.returns));
@@ -1466,11 +1465,11 @@ var f0 = H0((y6) => {
     function W(J) {
       const q = Object.getOwnPropertyNames(J).reduce(
           (D, B) => ({ ...D, [B]: X(J[B]) }),
-          {}
+          {},
         ),
         F = Object.getOwnPropertySymbols(J).reduce(
           (D, B) => ({ ...D, [B]: X(J[B]) }),
-          {}
+          {},
         );
       return { ...q, ...F };
     }
@@ -1616,13 +1615,13 @@ var f0 = H0((y6) => {
     function W(J, q) {
       return y6.Type.Intersect(
         J.allOf.map((F) => Z(F, q)),
-        { ...J }
+        { ...J },
       );
     }
     function Y(J, q) {
       return y6.Type.Union(
         J.anyOf.map((F) => Z(F, q)),
-        { ...J }
+        { ...J },
       );
     }
     function X(J, q) {
@@ -1658,7 +1657,7 @@ var f0 = H0((y6) => {
         ...K.reduce(
           (I, w) =>
             w.map((U) => (K.every((P) => P.includes(U)) ? I.add(U) : I))[0],
-          new Set()
+          new Set(),
         ),
       ];
     }
@@ -1709,7 +1708,7 @@ var f0 = H0((y6) => {
             const X = g1.ParseExact(Y.pattern);
             if (!f1.Check(X))
               throw new Y8(
-                "Cannot resolve keys from infinite template expression"
+                "Cannot resolve keys from infinite template expression",
               );
             return [...T1.Generate(X)];
           })()
@@ -1839,7 +1838,7 @@ var f0 = H0((y6) => {
       function U(O, S) {
         if (!Y(O, S))
           throw new K$(
-            "TemplateLiteralParser: Index must point to open parens"
+            "TemplateLiteralParser: Index must point to open parens",
           );
         let R = 0;
         for (let _ = S; _ < O.length; _++) {
@@ -1848,7 +1847,7 @@ var f0 = H0((y6) => {
           if (R === 0) return [S, _];
         }
         throw new K$(
-          "TemplateLiteralParser: Unclosed group parens in expression"
+          "TemplateLiteralParser: Unclosed group parens in expression",
         );
       }
       function P(O, S) {
@@ -2109,7 +2108,7 @@ var f0 = H0((y6) => {
         .map((Z) =>
           V.IsString(Z)
             ? { [y6.Kind]: "Literal", type: "string", const: Z }
-            : { [y6.Kind]: "Literal", type: "number", const: Z }
+            : { [y6.Kind]: "Literal", type: "number", const: Z },
         );
       return this.Create({ ...W, [y6.Kind]: "Union", anyOf: X });
     }
@@ -2159,7 +2158,7 @@ var f0 = H0((y6) => {
         : A.TTuple($) && A.TNumber(W)
         ? (() => {
             const Z = (V.IsUndefined($.items) ? [] : $.items).map((Q) =>
-              u.Type(Q)
+              u.Type(Q),
             );
             return this.Union(Z, Y);
           })()
@@ -2203,13 +2202,13 @@ var f0 = H0((y6) => {
               : Y === y6.PatternStringExact
               ? this.String(W)
               : this.Throw(
-                  "Unable to resolve key type from Record key pattern"
+                  "Unable to resolve key type from Record key pattern",
                 );
           })()
         : A.TTuple($)
         ? (() => {
             const X = (V.IsUndefined($.items) ? [] : $.items).map((Z, Q) =>
-              y6.Type.Literal(Q.toString())
+              y6.Type.Literal(Q.toString()),
             );
             return this.Union(X, W);
           })()
@@ -2288,7 +2287,7 @@ var f0 = H0((y6) => {
             if (X.includes(Q)) delete Z.properties[Q];
           return this.Create(Z);
         },
-        Y
+        Y,
       );
     }
     Partial($, W = {}) {
@@ -2300,7 +2299,7 @@ var f0 = H0((y6) => {
           }, {});
           return this.Object(X, this.Discard(Y, "required"));
         },
-        W
+        W,
       );
     }
     Pick($, W, Y = {}) {
@@ -2319,7 +2318,7 @@ var f0 = H0((y6) => {
             if (!X.includes(Q)) delete Z.properties[Q];
           return this.Create(Z);
         },
-        Y
+        Y,
       );
     }
     Record($, W, Y = {}) {
@@ -2330,9 +2329,9 @@ var f0 = H0((y6) => {
               ? this.Object(
                   [...T1.Generate(X)].reduce(
                     (Z, Q) => ({ ...Z, [Q]: u.Type(W) }),
-                    {}
+                    {},
                   ),
-                  Y
+                  Y,
                 )
               : this.Create({
                   ...Y,
@@ -2347,7 +2346,7 @@ var f0 = H0((y6) => {
             if (A.TUnionLiteral(X)) {
               const Z = X.anyOf.reduce(
                 (Q, J) => ({ ...Q, [J.const]: u.Type(W) }),
-                {}
+                {},
               );
               return this.Object(Z, { ...Y, [y6.Hint]: "Record" });
             } else
@@ -2358,7 +2357,7 @@ var f0 = H0((y6) => {
             return V.IsString($.const) || V.IsNumber($.const)
               ? this.Object({ [$.const]: u.Type(W) }, Y)
               : this.Throw(
-                  "Record key of type literal is not of type string or number"
+                  "Record key of type literal is not of type string or number",
                 );
           })()
         : A.TInteger($) || A.TNumber($)
@@ -2407,7 +2406,7 @@ var f0 = H0((y6) => {
           }, {});
           return this.Object(X, Y);
         },
-        W
+        W,
       );
     }
     Rest($) {
@@ -2965,7 +2964,7 @@ var a1 = H0((a6) => {
     const Z = e($.contains) ? $.contains : p0.Type.Never(),
       Q = X.reduce(
         (J, q, F) => (C0(Z, W, `${Y}${F}`, q).next().done === true ? J + 1 : J),
-        0
+        0,
       );
     if (Q === 0) yield f(k.ArrayContains, $, Y, X);
     if ((0, w0.IsNumber)($.minContains) && Q < $.minContains)
@@ -3093,7 +3092,7 @@ var a1 = H0((a6) => {
         k.ObjectRequiredProperty,
         $.properties[q],
         `${Y}/${q}`,
-        undefined
+        undefined,
       );
     }
     if ($.additionalProperties === false) {
@@ -3945,7 +3944,7 @@ var X$ = H0((SW) => {
       } else if (I0.TypeGuard.TSchema($.unevaluatedProperties)) {
         const Z = new RegExp(I0.KeyResolver.ResolvePattern($)),
           Q = Object.getOwnPropertyNames(Y).every(
-            (J) => Z.test(J) || R0($.unevaluatedProperties, W, Y[J])
+            (J) => Z.test(J) || R0($.unevaluatedProperties, W, Y[J]),
           );
         return X && Q;
       } else return X;
@@ -4010,7 +4009,7 @@ var X$ = H0((SW) => {
         else return Z.every((Q) => X.includes(Q));
       } else if (typeof $.additionalProperties === "object")
         return Object.getOwnPropertyNames(Y).every(
-          (Q) => X.includes(Q) || R0($.additionalProperties, W, Y[Q])
+          (Q) => X.includes(Q) || R0($.additionalProperties, W, Y[Q]),
         );
       else return true;
     },
@@ -4205,11 +4204,11 @@ var p8 = H0((IW) => {
     n4 = function ($, W) {
       if ($.uniqueItems === true && !(0, W0.HasPropertyKey)($, "default"))
         throw new Error(
-          "ValueCreate.Array: Array with the uniqueItems constraint requires a default value"
+          "ValueCreate.Array: Array with the uniqueItems constraint requires a default value",
         );
       else if ("contains" in $ && !(0, W0.HasPropertyKey)($, "default"))
         throw new Error(
-          "ValueCreate.Array: Array with the contains constraint requires a default value"
+          "ValueCreate.Array: Array with the contains constraint requires a default value",
         );
       else if ("default" in $) return $.default;
       else if ($.minItems !== undefined)
@@ -4331,13 +4330,13 @@ var p8 = H0((IW) => {
       if ($.pattern !== undefined)
         if (!(0, W0.HasPropertyKey)($, "default"))
           throw new Error(
-            "ValueCreate.String: String types with patterns must specify a default value"
+            "ValueCreate.String: String types with patterns must specify a default value",
           );
         else return $.default;
       else if ($.format !== undefined)
         if (!(0, W0.HasPropertyKey)($, "default"))
           throw new Error(
-            "ValueCreate.String: String types with formats must specify a default value"
+            "ValueCreate.String: String types with formats must specify a default value",
           );
         else return $.default;
       else if ((0, W0.HasPropertyKey)($, "default")) return $.default;
@@ -4368,7 +4367,7 @@ var p8 = H0((IW) => {
       if ($.items === undefined) return [];
       else
         return Array.from({ length: $.minItems }).map((Y, X) =>
-          y0($.items[X], W)
+          y0($.items[X], W),
         );
     },
     BJ = function ($, W) {
@@ -4379,7 +4378,7 @@ var p8 = H0((IW) => {
       if ((0, W0.HasPropertyKey)($, "default")) return $.default;
       else if ($.anyOf.length === 0)
         throw new Error(
-          "ValueCreate.Union: Cannot create Union with zero variants"
+          "ValueCreate.Union: Cannot create Union with zero variants",
         );
       else return y0($.anyOf[0], W);
     },
@@ -4514,7 +4513,7 @@ var p8 = H0((IW) => {
   class d8 extends g0.TypeBoxError {
     constructor($) {
       super(
-        "Intersect produced invalid value. Consider using a default value."
+        "Intersect produced invalid value. Consider using a default value.",
       );
       this.schema = $;
     }
@@ -4524,7 +4523,7 @@ var p8 = H0((IW) => {
   class y8 extends g0.TypeBoxError {
     constructor($) {
       super(
-        "Can only create template literal values from patterns that produce finite sequences. Consider using a default value."
+        "Can only create template literal values from patterns that produce finite sequences. Consider using a default value.",
       );
       this.schema = $;
     }
@@ -4534,7 +4533,7 @@ var p8 = H0((IW) => {
   class v8 extends g0.TypeBoxError {
     constructor($, W) {
       super(
-        "Value cannot be created as recursive type may produce value of infinite size. Consider using a default."
+        "Value cannot be created as recursive type may produce value of infinite size. Consider using a default.",
       );
       (this.schema = $), (this.recursiveMaxDepth = W);
     }
@@ -4810,7 +4809,7 @@ var pW = H0((yW) => {
       return (
         (0, J0.IsString)($) &&
         /^(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)$/i.test(
-          $
+          $,
         )
       );
     },
@@ -4824,7 +4823,7 @@ var pW = H0((yW) => {
       return (
         (0, J0.IsString)($) &&
         /^\d\d\d\d-[0-1]\d-[0-3]\dt(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)$/i.test(
-          $
+          $,
         )
       );
     },
@@ -4832,7 +4831,7 @@ var pW = H0((yW) => {
       return (
         (0, J0.IsString)($) &&
         /^\d\d\d\d-[0-1]\d-[0-3]\dt(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)?$/i.test(
-          $
+          $,
         )
       );
     },
@@ -5870,7 +5869,7 @@ var wY = H0((Xz, AY) => {
     },
     e0 = Array.from(
       { length: 256 },
-      ($, W) => "%" + ((W < 16 ? "0" : "") + W.toString(16)).toUpperCase()
+      ($, W) => "%" + ((W < 16 ? "0" : "") + W.toString(16)).toUpperCase(),
     ),
     n9 = new Int8Array([
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -5964,14 +5963,14 @@ var GY = H0((IY) => {
         throw new q$.TransformDecodeCheckError(
           this.schema,
           $,
-          this.Errors($).First()
+          this.Errors($).First(),
         );
       return this.hasTransform
         ? q$.DecodeTransform.Decode(
             this.schema,
             this.references,
             $,
-            (W, Y, X) => this.Check(X)
+            (W, Y, X) => this.Check(X),
           )
         : $;
     }
@@ -5981,14 +5980,14 @@ var GY = H0((IY) => {
             this.schema,
             this.references,
             $,
-            (Y, X, Z) => this.Check(Z)
+            (Y, X, Z) => this.Check(Z),
           )
         : $;
       if (!this.checkFunc(W))
         throw new q$.TransformEncodeCheckError(
           this.schema,
           $,
-          this.Errors($).First()
+          this.Errors($).First(),
         );
       return W;
     }
@@ -6212,7 +6211,7 @@ var GY = H0((IY) => {
           y = `Object.getOwnPropertyNames(${j}).every(key => ${d}.test(key) || ${s(
             L.unevaluatedProperties,
             E,
-            `${j}[key]`
+            `${j}[key]`,
           )})`;
         yield `(${m} && ${y})`;
       } else yield `(${m})`;
@@ -6445,7 +6444,7 @@ var GY = H0((IY) => {
         Q0 = $1("boolean"),
         M = [...i(E, j, m, d)].map((a) => `${Z0(4)}${a}`).join(` &&${y}`);
       return `function ${L}(${P0})${Q0} {${y}${Z0(2)}return (${y}${M}${y}${Z0(
-        2
+        2,
       )})\n}`;
     }
     function U0(L, E) {
@@ -6594,7 +6593,7 @@ class _1 {
         if (X.params === null) X.params = S6(B);
         else if (X.params.paramName !== B)
           throw Error(
-            `Cannot create route "${W}" with parameter "${B}" because a route already exists with a different parameter name ("${X.params.paramName}") in the same location`
+            `Cannot create route "${W}" with parameter "${B}" because a route already exists with a different parameter name ("${X.params.paramName}") in the same location`,
           );
         let K = X.params;
         if (K.inert === null) {
@@ -6636,7 +6635,7 @@ class _1 {
       if (X.params === null) X.params = S6(D);
       else if (X.params.paramName !== D)
         throw Error(
-          `Cannot create route "${W}" with parameter "${D}" because a route already exists with a different parameter name ("${X.params.paramName}") in the same location`
+          `Cannot create route "${W}" with parameter "${D}" because a route already exists with a different parameter name ("${X.params.paramName}") in the same location`,
         );
       return X.params.store === null && (X.params.store = Y), X.params.store;
     }
@@ -6763,7 +6762,7 @@ var I6 = ($, W) => {
                     g.push(
                       new Promise((n) => {
                         M0 = n;
-                      })
+                      }),
                     ),
                       O.push(M0);
                   }
@@ -7452,7 +7451,7 @@ var j1 = ($, W) => {
 };
 var N1 = (
   $,
-  { models: W = {}, additionalProperties: Y = false, dynamic: X = false }
+  { models: W = {}, additionalProperties: Y = false, dynamic: X = false },
 ) => {
   if (!$) return;
   if (typeof $ === "string" && !($ in W)) return;
@@ -7473,7 +7472,7 @@ var N1 = (
 };
 var q6 = (
   $,
-  { models: W = {}, additionalProperties: Y = false, dynamic: X = false }
+  { models: W = {}, additionalProperties: Y = false, dynamic: X = false },
 ) => {
   if (!$) return;
   if (typeof $ === "string" && !($ in W)) return;
@@ -7657,7 +7656,7 @@ class c0 {
   add($) {
     const W = Object.assign(
       this.property,
-      typeof $ === "function" ? $(Object.assign(this.property, this.value)) : $
+      typeof $ === "function" ? $(Object.assign(this.property, this.value)) : $,
     );
     if ("value" in W) (this._value = W.value), delete W.value;
     return (this.property = W), this.sync();
@@ -8053,7 +8052,7 @@ var w1 = ($) => {
 var U$ = ($, W) =>
   new Response(
     JSON.stringify({ name: $?.name, message: $?.message, cause: $?.cause }),
-    { status: W?.status !== 200 ? W?.status ?? 500 : 500, headers: W?.headers }
+    { status: W?.status !== 200 ? W?.status ?? 500 : 500, headers: W?.headers },
   );
 var U7 = new Headers().toJSON;
 var F7 = new RegExp(" (\\w+) = context", "g");
@@ -8083,7 +8082,7 @@ var iY = ({
 					${D ? `unit: ${q},` : ""}
 					${J}
 				})`.replace(/(\t| |\n)/g, "") +
-          "\n"
+          "\n",
       );
       let B = false;
       return () => {
@@ -8099,7 +8098,7 @@ var iY = ({
 							type: 'end',
 							time: performance.now()
 						})`.replace(/(\t| |\n)/g, "") +
-              "\n"
+              "\n",
           ),
           W && Z === "afterHandle")
         )
@@ -8268,7 +8267,7 @@ var mY = ({
   const O =
       X || (W !== "GET" && W !== "HEAD")
         ? [Z, ...Y.transform, ...Y.beforeHandle, ...Y.afterHandle].map((T) =>
-            T.toString()
+            T.toString(),
           )
         : [],
     S =
@@ -8283,7 +8282,7 @@ var mY = ({
   if (G?.sign) {
     if (!G.secrets)
       throw new Error(
-        `t.Cookie required secret which is not set in (${W}) ${$}.`
+        `t.Cookie required secret which is not set in (${W}) ${$}.`,
       );
     const T = !G.secrets
       ? undefined
@@ -8761,7 +8760,7 @@ var mY = ({
 	}`),
     Function(
       "hooks",
-      N
+      N,
     )({
       handler: Z,
       hooks: Y,
@@ -8929,7 +8928,7 @@ var F6 = ($) => {
     ($.handleError = B6($)),
     Function(
       "data",
-      Y
+      Y,
     )({
       app: $,
       mapEarlyResponse: l0,
@@ -9154,18 +9153,18 @@ var A0 = Y1(f0(), 1);
 try {
   I1.TypeSystem.Format("email", ($) =>
     /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i.test(
-      $
-    )
+      $,
+    ),
   ),
     I1.TypeSystem.Format("uuid", ($) =>
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        $
-      )
+        $,
+      ),
     ),
     I1.TypeSystem.Format("date", ($) => !Number.isNaN(new Date($).getTime())),
     I1.TypeSystem.Format(
       "date-time",
-      ($) => !Number.isNaN(new Date($).getTime())
+      ($) => !Number.isNaN(new Date($).getTime()),
     );
 } catch ($) {}
 var nY = ($) => {
@@ -9305,7 +9304,7 @@ class n$ {
     { allowMeta: Z = false, skipPrefix: Q = false } = {
       allowMeta: false,
       skipPrefix: false,
-    }
+    },
   ) {
     if (typeof W === "string") W = [W];
     for (let J of W) {
@@ -9441,7 +9440,7 @@ class n$ {
         this.router.add(
           $,
           J.endsWith("/") ? J.slice(0, J.length - 1) : J + "/",
-          I
+          I,
         );
     }
   }
@@ -9554,13 +9553,13 @@ class n$ {
                   : Array.isArray(K.error)
                   ? [...K.error, ...Q.event.error]
                   : [K.error, ...Q.event.error],
-              })
+              }),
             );
           } else
             this.add(J, q, F, j1(D, { error: Q.event.error }), {
               skipPrefix: true,
             });
-        }
+        },
       ),
       this
     );
@@ -9603,9 +9602,9 @@ class n$ {
                 : Array.isArray(q.error)
                 ? [...q.error, ...X.event.error]
                 : [q.error, ...X.event.error],
-            })
+            }),
           );
-        }
+        },
       ),
       this
     );
@@ -9618,7 +9617,7 @@ class n$ {
             if (typeof W === "function") return W(this);
             if (typeof W.default === "function") return W.default(this);
             return this._use(W.default);
-          }).then((W) => W.compile())
+          }).then((W) => W.compile()),
         ),
         this
       );
@@ -9643,7 +9642,7 @@ class n$ {
       (Object.values($.routes).forEach(
         ({ method: Z, path: Q, handler: J, hooks: q }) => {
           this.add(Z, Q, J, j1(q, { error: $.event.error }));
-        }
+        },
       ),
       !W)
     )
@@ -9764,7 +9763,7 @@ class n$ {
           headers: W.headers,
           params: W.params,
           query: W.query,
-        }
+        },
       ),
       this
     );
@@ -9899,7 +9898,7 @@ class n$ {
             };
     if (typeof Bun === "undefined")
       throw new Error(
-        ".listen() is designed to run on Bun only. If you are running Elysia in other environment please use a dedicated plugin or export the handler via Elysia.fetch"
+        ".listen() is designed to run on Bun only. If you are running Elysia in other environment please use a dedicated plugin or export the handler via Elysia.fetch",
       );
     this.server = Bun?.serve(X);
     for (let Z = 0; Z < this.event.start.length; Z++) this.event.start[Z](this);
@@ -9914,7 +9913,7 @@ class n$ {
   stop = async () => {
     if (!this.server)
       throw new Error(
-        "Elysia isn't running. Call `app.listen` to start the server."
+        "Elysia isn't running. Call `app.listen` to start the server.",
       );
     this.server.stop();
     for (let $ = 0; $ < this.event.stop.length; $++)
@@ -9950,5 +9949,5 @@ var app = new n$()
   })
   .listen(port);
 console.log(
-  `\uD83E\uDD8A Livereload running ${app.server?.hostname}:${app.server?.port}`
+  `\uD83E\uDD8A Livereload running ${app.server?.hostname}:${app.server?.port}`,
 );

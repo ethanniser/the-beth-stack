@@ -33,11 +33,11 @@ async function createElement(
 ): Promise<string> {
   const hasAnyPromiseChildren = children.reduce(
     (acc, child) => acc || child instanceof Promise,
-    false
+    false,
   );
   const hasAnyUnresolvedPromiseChildren = children.reduce(
     (acc, child) => acc || Bun.peek.status(child) !== "fulfilled",
-    false
+    false,
   );
 
   const insideStreamCall =
@@ -102,7 +102,7 @@ async function createElement(
       children,
       "safe" in attributes &&
         typeof attributes.safe === "boolean" &&
-        attributes.safe
+        attributes.safe,
     ) +
     "</" +
     name +
@@ -111,11 +111,11 @@ async function createElement(
 }
 
 function compile<
-  P extends { [K in keyof P]: K extends "children" ? Children : string }
+  P extends { [K in keyof P]: K extends "children" ? Children : string },
 >(
   cleanComponent: SyncComponent<P>,
   strict: boolean = true,
-  separator: string = "/*\x00*/"
+  separator: string = "/*\x00*/",
 ): SyncComponent<P> {
   const properties = new Set();
 
@@ -143,8 +143,8 @@ function compile<
               : `${separator}\`\`${separator}`
           }) + ${separator}\``;
         },
-      }
-    )
+      },
+    ),
   );
 
   const sepLength = separator.length;
@@ -190,7 +190,7 @@ function compile<
         // Function to throw when a property is not found
         'function throwPropertyNotFound(name) { throw new Error("Property " + name + " was not provided.") };\n' +
         // Concatenates the body
-        `return \`${body}\``
+        `return \`${body}\``,
     ) as SyncComponent<P>;
   }
 
@@ -199,7 +199,7 @@ function compile<
     "args",
     // Adds a empty args object when it is not present
     "if (args === undefined) { args = Object.create(null) };\n" +
-      `return \`${body}\``
+      `return \`${body}\``,
   ) as SyncComponent<P>;
 }
 

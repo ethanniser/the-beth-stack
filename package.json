@@ -1,11 +1,17 @@
 {
   "name": "@beth-stack/root",
+  "dependencies": {
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.26.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.0.2",
+    "@manypkg/cli": "^0.20.0",
+    "dotenv": "latest",
+    "prettier": "^3.0.3",
+    "turbo": "^1.10.1",
+    "typescript": "^5.1.6",
+    "@total-typescript/ts-reset": "^0.5.1"
+  },
   "private": true,
-  "type": "module",
-  "workspaces": [
-    "packages/*",
-    "www"
-  ],
   "scripts": {
     "build:all": "turbo run build",
     "build": "turbo run build --filter \"./packages/*\"",
@@ -17,17 +23,12 @@
     "format": "prettier --write . --list-different",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "reset-cache": "rm -rf /home/whatplan/.bun/install/cache && rm -rf node_modules && bun i"
   },
-  "dependencies": {
-    "@changesets/changelog-github": "^0.4.8",
-    "@changesets/cli": "^2.26.1",
-    "@ianvs/prettier-plugin-sort-imports": "^4.0.2",
-    "@manypkg/cli": "^0.20.0",
-    "dotenv": "latest",
-    "prettier": "^2.8.8",
-    "turbo": "^1.10.1",
-    "typescript": "^5.1.6",
-    "@total-typescript/ts-reset": "^0.5.1"
-  }
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "www"
+  ]
 }

@@ -1,6 +1,6 @@
-/** @typedef  {import("prettier").Config} PrettierConfig */
-
-/** @type { PrettierConfig | SortImportsConfig } */
+/**
+ * @type {import('prettier').Config}
+ */
 const config = {
   arrowParens: "always",
   printWidth: 80,

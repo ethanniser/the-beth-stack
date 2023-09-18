@@ -1,9 +1,10 @@
 {
-  "name": "bethstack-turbo",
+  "name": "@beth-stack/root",
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "www"
   ],
   "scripts": {
     "build:all": "turbo run build",

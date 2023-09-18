@@ -28,5 +28,8 @@
     "prettier": "^2.8.8",
     "turbo": "^1.10.1",
     "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "@total-typescript/ts-reset": "^0.5.1"
   }
 }

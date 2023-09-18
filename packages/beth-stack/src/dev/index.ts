@@ -1,7 +1,7 @@
 export function liveReloadScript(port?: number): string {
   return `
         (function () {
-          let socket = new WebSocket("ws://localhost:3001/ws");
+          let socket = new WebSocket("ws://localhost:${port}/ws");
 
           socket.onopen = function(e) {
             console.log("connected")

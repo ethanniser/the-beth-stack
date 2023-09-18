@@ -1,5 +1,5 @@
-import { BethRenderCache } from "../cache/render";
 import { BethPersistCache } from "../cache/persist";
+import { BethRenderCache } from "../cache/render";
 
 declare global {
   var BETH_GLOBAL_RENDER_CACHE: BethRenderCache;

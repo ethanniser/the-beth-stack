@@ -1,4 +1,4 @@
-import { test, expect, describe } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { persistedCache, revalidateTag, setGlobalPersistCacheConfig } from "..";
 import { renderToString } from "../../jsx";
 import "../../jsx/register";
@@ -46,7 +46,7 @@ describe("SWR OFF (not default)", () => {
         expect(html3).toBe(`<p>number: 2</p><p>number: 2</p>`);
 
         resolve(void 0);
-      }, 1050)
+      }, 1050),
     );
   });
 
@@ -93,7 +93,7 @@ describe("SWR OFF (not default)", () => {
         expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
 
         resolve(void 0);
-      }, 1010)
+      }, 1010),
     );
   });
 
@@ -143,7 +143,7 @@ describe("SWR OFF (not default)", () => {
         expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
 
         resolve(void 0);
-      }, 1100)
+      }, 1100),
     );
   });
 
@@ -193,7 +193,7 @@ describe("SWR OFF (not default)", () => {
         expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
 
         resolve(void 0);
-      }, 1150)
+      }, 1150),
     );
   });
 });
@@ -242,7 +242,7 @@ describe("SWR ON (default)", () => {
         expect(html3).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
         resolve(void 0);
-      }, 1010)
+      }, 1010),
     );
   });
 
@@ -289,7 +289,7 @@ describe("SWR ON (default)", () => {
         expect(html3).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
         resolve(void 0);
-      }, 1010)
+      }, 1010),
     );
   });
 
@@ -339,7 +339,7 @@ describe("SWR ON (default)", () => {
         expect(html3).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
         resolve(void 0);
-      }, 1100)
+      }, 1100),
     );
   });
 
@@ -389,7 +389,7 @@ describe("SWR ON (default)", () => {
         expect(html3).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
         resolve(void 0);
-      }, 1150)
+      }, 1150),
     );
   });
 });

@@ -1,9 +1,9 @@
 import "../jsx/register";
 import "../jsx/htmx";
-import { setGlobalPersistCacheConfig } from "../cache";
-import { renderToStreamResponse, renderToStringResponse } from "../jsx";
 import { type Elysia } from "elysia";
+import { setGlobalPersistCacheConfig } from "../cache";
 import { GlobalCacheConfig } from "../cache/persist";
+import { renderToStreamResponse, renderToStringResponse } from "../jsx";
 import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 
 type BethPluginOptions = GlobalCacheConfig;
@@ -12,7 +12,7 @@ export function bethStack(options: Partial<BethPluginOptions> = {}) {
   setGlobalPersistCacheConfig(options);
 
   async function html<T extends () => JSX.Element>(
-    lazyHtml: T
+    lazyHtml: T,
   ): Promise<Response> {
     return renderToStringResponse(lazyHtml);
   }

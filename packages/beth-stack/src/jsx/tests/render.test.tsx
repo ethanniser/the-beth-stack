@@ -1,9 +1,9 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import "../register";
 import {
-  renderToString,
   renderToStream,
   renderToStreamResponse,
+  renderToString,
   renderToStringResponse,
 } from "../render";
 import { Suspense, swapScript } from "../suspense";
@@ -12,7 +12,7 @@ function wait(ms: number): Promise<number> {
   return new Promise((resolve) =>
     setTimeout(() => {
       resolve(ms);
-    }, ms)
+    }, ms),
   );
 }
 
@@ -102,7 +102,7 @@ test("renderToStream, doesn't resolve immediately", async () => {
 
   for await (const chunk of stream) {
     expect(chunk.replace(/[\s\n\t\r]+/g, "")).toBe(
-      expectedChunks[index]!.replace(/[\s\n\t\r]+/g, "")
+      expectedChunks[index]!.replace(/[\s\n\t\r]+/g, ""),
     );
     index++;
   }

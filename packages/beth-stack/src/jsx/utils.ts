@@ -308,7 +308,7 @@ function escapeHtml(value: any): string {
 
 export function contentsToString(
   contents: Children[],
-  escape?: boolean
+  escape?: boolean,
 ): string {
   const length = contents.length;
 

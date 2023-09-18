@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import Html, { PropsWithChildren } from "../../jsx";
-
 import { renderToString } from "../../jsx/render";
 import { cache } from "../render";
 

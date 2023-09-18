@@ -1,5 +1,5 @@
-import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 import { Children } from "../jsx";
+import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 
 type Args<T> = T extends (...args: infer U) => any ? U : never;
 
@@ -16,7 +16,7 @@ function defaultCompare<T extends Array<any>>(arr1: T, arr2: T): boolean {
 
 export function cache<T extends (...args: any[]) => any>(
   fn: T,
-  compareFn: (oldArgs: Args<T>, newArgs: Args<T>) => boolean = defaultCompare
+  compareFn: (oldArgs: Args<T>, newArgs: Args<T>) => boolean = defaultCompare,
 ): T {
   return ((...args: Args<T>) => {
     const cached = BETH_GLOBAL_RENDER_CACHE.dedupeCache.get(fn) || new Map();

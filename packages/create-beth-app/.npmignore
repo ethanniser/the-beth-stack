@@ -1,0 +1,8 @@
+*
+
+!src/**/*
+!dist/**/*
+!package.json
+!LICENSE
+!README.md
+!tsconfig.json

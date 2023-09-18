@@ -3,8 +3,8 @@
  */
 /// <reference path="./jsx.d.ts" />
 
-import { Suspense } from "../jsx/suspense";
 import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
+import { Suspense } from "./suspense";
 import { attributesToString, contentsToString, isVoidElement } from "./utils";
 
 type Children =

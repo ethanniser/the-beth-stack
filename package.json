@@ -1,6 +1,6 @@
 {
   "name": "beth-stack",
-  "version": "0.0.11",
+  "version": "0.0.13",
   "type": "module",
   "bin": "./dist/cli/index.js",
   "exports": {
@@ -20,12 +20,10 @@
   },
   "devDependencies": {
     "bun-types": "latest",
-    "csstype": "^3.1.2"
+    "csstype": "^3.1.2",
+    "elysia": "./elysia-0.7.0-exp.0.tgz"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "elysia": "./elysia-0.7.0-exp.0.tgz"
   }
 }

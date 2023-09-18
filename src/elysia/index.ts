@@ -2,7 +2,7 @@ import "../jsx/register";
 import "../jsx/htmx";
 import { setGlobalPersistCacheConfig } from "../cache";
 import { renderToStreamResponse, renderToStringResponse } from "../jsx";
-import { Elysia } from "elysia";
+import { type Elysia } from "elysia";
 import { GlobalCacheConfig } from "../cache/persist";
 import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 
@@ -21,15 +21,19 @@ export function bethStack(options: Partial<BethPluginOptions> = {}) {
     return renderToStreamResponse(lazyHtml);
   }
 
-  return new Elysia({
-    name: "BETH-STACK",
-  })
-    .decorate("html", html)
-    .decorate("htmlStream", htmlStream)
-    .onRequest(() => {
-      BETH_GLOBAL_RENDER_CACHE.reset();
-    })
-    .onResponse(() => {
-      BETH_GLOBAL_RENDER_CACHE.reset();
-    });
+  return function bethPlugin(app: Elysia) {
+    return app
+      .decorate("html", html)
+      .decorate("htmlStream", htmlStream)
+      .onRequest(() => {
+        BETH_GLOBAL_RENDER_CACHE.reset();
+        // elysia is weird idk
+        return void 0;
+      })
+      .onResponse(() => {
+        BETH_GLOBAL_RENDER_CACHE.reset();
+        // elysia is weird idk
+        return void 0;
+      });
+  };
 }

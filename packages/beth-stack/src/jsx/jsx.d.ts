@@ -194,8 +194,8 @@ declare namespace JSX {
     crossorigin?: undefined | string;
     usemap?: undefined | string;
     ismap?: undefined | string;
-    width?: undefined | string;
-    height?: undefined | string;
+    width?: undefined | number | string;
+    height?: undefined | number | string;
   }
 
   interface HtmlInputTag extends HtmlTag {

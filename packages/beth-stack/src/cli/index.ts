@@ -23,9 +23,9 @@ const app = new Elysia()
       // console.log("close");
       wsConnections.delete(ws);
     },
-    message(ws, message) {
-      // console.log("message", message);
-    },
+    // message(ws, message) {
+    //   console.log("message", message);
+    // },
   })
   .get("/restart", () => {
     // console.log("recieved restart");

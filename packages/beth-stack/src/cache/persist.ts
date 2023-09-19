@@ -7,9 +7,11 @@ export type CacheOptions = {
   persist?: "memory" | "json";
   revalidate?: number;
   tags?: string[];
-  seedImmediately?: {
-    arguments?: any[];
-  } | boolean;
+  seedImmediately?:
+    | boolean
+    | {
+        initialArgs: any[] | any[][];
+      };
 };
 
 export type GlobalCacheConfig = {

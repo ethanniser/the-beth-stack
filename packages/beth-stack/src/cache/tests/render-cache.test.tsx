@@ -156,3 +156,72 @@ describe("async components", () => {
     expect(html4).toBe(`<p>number: 4</p><p>number: 4</p>`);
   });
 });
+
+test("if a function throws, the same error is rethrown", async () => {
+  let first = true;
+  const throws = cache(() => {
+    if (first) {
+      first = false;
+      throw new Error("test");
+    }
+  });
+
+  const Component = async () => {
+    throws();
+    return <p>hi</p>;
+  };
+
+  const html1 = () => <Component />;
+  expect(html1).toThrow();
+  const html2 = () => <Component />;
+  expect(html2).toThrow();
+  const html3 = () => <Component />;
+  expect(html3).toThrow();
+});
+
+test("if a function throws, the same error is rethrown", async () => {
+  let first = true;
+  const throws = cache(() => {
+    if (first) {
+      first = false;
+      throw new Error("test");
+    }
+  });
+
+  const Component = async () => {
+    throws();
+    return <p>hi</p>;
+  };
+
+  const html1 = () => <Component />;
+  expect(html1).toThrow("test");
+  const html2 = () => <Component />;
+  expect(html2).toThrow("test");
+  const html3 = () => <Component />;
+  expect(html3).toThrow("test");
+});
+
+test("if a promise rejects, the same rejected promise is returned", async () => {
+  let first = true;
+  const rejects = cache(async () => {
+    if (first) {
+      first = false;
+      throw new Error("test promise rejection");
+    }
+    return "success";
+  });
+
+  const Component = async () => {
+    await rejects();
+    return <p>hi</p>;
+  };
+
+  const html1 = () => <Component />;
+  expect(html1).toThrow("test promise rejection");
+
+  const html2 = () => <Component />;
+  expect(html2).toThrow("test promise rejection");
+
+  const html3 = () => <Component />;
+  expect(html3).toThrow("test promise rejection");
+});

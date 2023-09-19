@@ -23,21 +23,33 @@ export function cache<T extends (...args: any[]) => any>(
 
     BETH_GLOBAL_RENDER_CACHE.dedupeCache.set(fn, cached);
 
-    for (let [keyArgs, valueOrPromise] of cached.entries()) {
+    for (let [keyArgs, cachedValue] of cached.entries()) {
       if (compareFn(args, keyArgs)) {
-        return valueOrPromise;
+        if (cachedValue.type === "error") {
+          throw cachedValue.error;
+        } else {
+          return cachedValue.value;
+        }
       }
     }
 
-    const functionResult = fn(...args);
-    cached.set(args, functionResult);
-
-    return functionResult;
+    try {
+      const functionResult = fn(...args);
+      cached.set(args, { type: "result", value: functionResult });
+      return functionResult;
+    } catch (error) {
+      cached.set(args, { type: "error", error });
+      throw error;
+    }
   }) as T;
 }
 
+type CachedValue<T> =
+  | { type: "result"; value: T }
+  | { type: "error"; error: any };
+
 export class BethRenderCache {
-  public dedupeCache: WeakMap<Function, Map<Array<any>, any>>;
+  public dedupeCache: WeakMap<Function, Map<Array<any>, CachedValue<any>>>;
   public streamController: ReadableStreamDefaultController<string> | undefined;
   public counter: number;
   private suspenseMap: Map<Children, number>;

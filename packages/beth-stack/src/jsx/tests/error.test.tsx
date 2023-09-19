@@ -1,7 +1,6 @@
 import { expect, test } from "bun:test";
 import "../register";
 import { ErrorBoundary } from "../error";
-import { renderToStream, renderToString } from "../render";
 import { Suspense } from "../suspense";
 
 async function Reject() {

@@ -1,11 +1,11 @@
 import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 
-export async function renderToString<T extends () => JSX.Element>(
+export function renderToString<T extends () => JSX.Element>(
   lazyHtml: T,
 ): JSX.Element {
   BETH_GLOBAL_RENDER_CACHE.reset();
   const resultPromise = lazyHtml();
-  resultPromise.then(() => BETH_GLOBAL_RENDER_CACHE.reset());
+  resultPromise.finally(() => BETH_GLOBAL_RENDER_CACHE.reset());
   return resultPromise;
 }
 
@@ -48,6 +48,9 @@ export function renderToStream<T extends () => JSX.Element>(
           // Handle error appropriately
           BETH_GLOBAL_RENDER_CACHE.streamController?.error(error);
           BETH_GLOBAL_RENDER_CACHE.closeNow();
+        })
+        .finally(() => {
+          BETH_GLOBAL_RENDER_CACHE.reset();
         });
     },
   });

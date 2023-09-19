@@ -4,6 +4,7 @@
 /// <reference path="./jsx.d.ts" />
 
 import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
+import { ErrorBoundary } from "./error";
 import { Suspense } from "./suspense";
 import { attributesToString, contentsToString, isVoidElement } from "./utils";
 
@@ -57,7 +58,7 @@ async function createElement(
         </div>
       `;
     }
-  } else {
+  } else if (name !== ErrorBoundary) {
     if (hasAnyPromiseChildren) {
       // Converts children to a string if they are promises.
       children = await Promise.all(children);
@@ -218,6 +219,7 @@ export {
 };
 
 export { Suspense } from "./suspense";
+export { ErrorBoundary } from "./error";
 export {
   renderToStream,
   renderToStreamResponse,

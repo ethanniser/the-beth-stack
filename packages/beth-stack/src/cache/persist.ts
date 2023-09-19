@@ -7,12 +7,14 @@ export type CacheOptions = {
   persist?: "memory" | "json";
   revalidate?: number;
   tags?: string[];
+  seedImmediately?: boolean;
 };
 
 export type GlobalCacheConfig = {
   log: boolean;
   defaultCacheOptions: Required<CacheOptions>;
   returnStaleWhileRevalidate: boolean;
+  onRevalidateErrorReturnStale: boolean;
 };
 
 export function persistedCache<T extends () => Promise<any>>(
@@ -48,6 +50,15 @@ export function setGlobalPersistCacheConfig(
   BETH_GLOBAL_PERSISTED_CACHE.setConfig(config);
 }
 
+class CacheNotFound extends Error {
+  constructor(
+    message: string,
+    readonly location: "memory" | "json",
+  ) {
+    super(message);
+  }
+}
+
 export class BethPersistCache {
   private callBackMap: Map<
     string,
@@ -64,6 +75,8 @@ export class BethPersistCache {
   private keys: Set<string>;
   private inInitialLoad: Set<string>;
   private config: GlobalCacheConfig;
+  private neverSeeded: Set<string>;
+  private toReThrow: Map<string, any>;
 
   constructor() {
     this.callBackMap = new Map();
@@ -72,14 +85,18 @@ export class BethPersistCache {
     this.pendingMap = new Map();
     this.keys = new Set();
     this.inInitialLoad = new Set();
+    this.neverSeeded = new Set();
+    this.toReThrow = new Map();
     this.config = {
       log: false,
       defaultCacheOptions: {
         persist: "json",
         revalidate: Infinity,
         tags: [],
+        seedImmediately: true,
       },
       returnStaleWhileRevalidate: true,
+      onRevalidateErrorReturnStale: true,
     };
 
     if (existsSync("beth-cache.sqlite")) unlinkSync("beth-cache.sqlite");
@@ -105,6 +122,10 @@ export class BethPersistCache {
     this.config.returnStaleWhileRevalidate =
       config.returnStaleWhileRevalidate ??
       this.config.returnStaleWhileRevalidate;
+
+    this.config.onRevalidateErrorReturnStale =
+      config.onRevalidateErrorReturnStale ??
+      this.config.onRevalidateErrorReturnStale;
   }
 
   private setJsonCache(key: string, value: any) {
@@ -123,9 +144,10 @@ export class BethPersistCache {
       .query("SELECT value FROM cache WHERE key = ?")
       .get(key) as { value: string } | undefined;
     if (!result) {
-      if (this.config.log)
-        console.log("No entry found in json cache when one was expected:", key);
-      throw new Error("JSON Cache Miss");
+      throw new CacheNotFound(
+        `No entry found in json cache when one was expected: ${key}`,
+        "json",
+      );
     }
     return JSON.parse(result.value);
   }
@@ -156,6 +178,12 @@ export class BethPersistCache {
       this.keys.add(key);
     }
 
+    this.callBackMap.set(key, {
+      callBack,
+      tags,
+      location,
+    });
+
     if (this.config.log) {
       console.log("Initial Callback run to seed cache: ", key);
     }
@@ -164,24 +192,26 @@ export class BethPersistCache {
     this.inInitialLoad.add(key);
     this.pendingMap.set(key, promise);
 
-    promise.then((value) => {
-      if (this.config.log) console.log(`Seeding ${location} Cache:`, key);
-      if (location === "memory") {
-        this.inMemoryDataCache.set(key, value);
-      } else if (location === "json") {
-        this.setJsonCache(key, value);
-      }
-      this.inInitialLoad.delete(key);
-      this.pendingMap.delete(key);
-      this.callBackMap.set(key, {
-        callBack,
-        tags,
-        location,
+    promise
+      .then((value) => {
+        if (this.config.log) console.log(`Seeding ${location} Cache:`, key);
+        if (location === "memory") {
+          this.inMemoryDataCache.set(key, value);
+        } else if (location === "json") {
+          this.setJsonCache(key, value);
+        }
+        this.inInitialLoad.delete(key);
+        this.pendingMap.delete(key);
+        if (revalidate > 0) {
+          this.setInterval(key, revalidate);
+        }
+      })
+      .catch((e) => {
+        this.inInitialLoad.delete(key);
+        this.pendingMap.delete(key);
+        this.neverSeeded.add(key);
+        if (this.config.log) console.log(`Initial Callback Errored:`, key);
       });
-      if (revalidate > 0) {
-        this.setInterval(key, revalidate);
-      }
-    });
   }
 
   private rerunCallBack(key: string) {
@@ -191,29 +221,46 @@ export class BethPersistCache {
       return pending;
     }
 
-    if (this.config.log) console.log("rerunning callback:", key);
+    if (this.config.log) console.log("Rerunning callback:", key);
     const result = this.callBackMap.get(key);
     if (!result) {
       throw new Error("No callback found for key: " + key);
     }
-    const { callBack, tags, location } = result;
+    const { callBack, location } = result;
     const callBackPromise = callBack();
     this.pendingMap.set(key, callBackPromise);
-    callBackPromise.then((value) => {
-      if (this.config.log)
-        console.log(`Callback complete, setting ${location} cache:`, key);
-      if (location === "memory") {
-        this.inMemoryDataCache.set(key, value);
-      } else if (location === "json") {
-        this.setJsonCache(key, value);
-      }
-      this.callBackMap.set(key, {
-        callBack,
-        tags,
-        location,
+    callBackPromise
+      .then((value) => {
+        if (this.config.log)
+          console.log(`Callback complete, setting ${location} cache:`, key);
+        if (location === "memory") {
+          this.inMemoryDataCache.set(key, value);
+        } else if (location === "json") {
+          this.setJsonCache(key, value);
+        }
+        this.toReThrow.delete(key);
+        this.pendingMap.delete(key);
+      })
+      .catch((e) => {
+        this.pendingMap.delete(key);
+        if (this.config.log) console.log(`Rerunning callback Errored:`, key);
+        if (this.config.onRevalidateErrorReturnStale) {
+          if (this.config.log)
+            console.log(`Returning stale data dispite error:`, key);
+          return this.getCachedValue(key, location);
+        } else {
+          if (this.neverSeeded.has(key)) {
+            if (this.config.log)
+              console.log(
+                "Never seeded revalidation errored, remaining never seeded:",
+                key,
+              );
+          } else {
+            console.log("Revalidating Errored, storing to rethrow:", key);
+            this.toReThrow.set(key, e);
+          }
+        }
       });
-      this.pendingMap.delete(key);
-    });
     return callBackPromise;
   }
 
@@ -237,12 +284,10 @@ export class BethPersistCache {
     if (cacheResult) {
       return cacheResult;
     } else {
-      if (this.config.log)
-        console.log(
-          "No entry found in memory cache when one was expected:",
-          key,
-        );
-      throw new Error("Memory Cache Miss");
+      throw new CacheNotFound(
+        `No entry found in memory cache when one was expected: ${key}`,
+        "memory",
+      );
     }
   }
 
@@ -255,18 +300,40 @@ export class BethPersistCache {
         revalidatePromises.push(done);
       }
     });
-    return Promise.all(revalidatePromises).then(() => void 0);
+    return Promise.allSettled(revalidatePromises).then(() => void 0);
   }
 
   public getCachedValue(key: string, cache: "memory" | "json") {
+    if (this.toReThrow.has(key)) {
+      const error = this.toReThrow.get(key);
+      this.toReThrow.delete(key);
+      if (this.config.log)
+        console.log(
+          "Rethrowing Error from last revalidation (this not the default and enabled by config):",
+          key,
+        );
+      throw error;
+    }
     try {
       // if SWR is turned off, and the revalidation is in progress, return the pending promise
       // even if SWR is on, during the initial load, we have nothing else to return
       const pending = this.pendingMap.get(key);
       const inInitialLoad = this.inInitialLoad.has(key);
       const SWR = this.config.returnStaleWhileRevalidate;
+      const neverSeeded = this.neverSeeded.has(key);
 
       // console.log("DEBUG", { pending, inInitialLoad, SWR });
+
+      if (neverSeeded) {
+        if (this.config.log)
+          console.log("Never Seeded - Rerunning Callback:", key);
+        const result = this.rerunCallBack(key);
+
+        result.then(() => {
+          this.neverSeeded.delete(key);
+        });
+        return result;
+      }
 
       if (pending && inInitialLoad) {
         // if we are in the initial load, we have nothing else to return except the pending promise
@@ -301,14 +368,8 @@ export class BethPersistCache {
         }
       }
     } catch (e) {
-      if (e instanceof Error) {
-        if (e.message === "Memory Cache Miss") {
-          return this.rerunCallBack(key);
-        } else if (e.message === "JSON Cache Miss") {
-          return this.rerunCallBack(key);
-        } else {
-          throw e;
-        }
+      if (e instanceof CacheNotFound) {
+        return this.rerunCallBack(key);
       } else {
         throw e;
       }

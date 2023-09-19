@@ -19,6 +19,7 @@ export function cache<T extends (...args: any[]) => any>(
   compareFn: (oldArgs: Args<T>, newArgs: Args<T>) => boolean = defaultCompare,
 ): T {
   return ((...args: Args<T>) => {
+    console.log("cache called");
     const cached = BETH_GLOBAL_RENDER_CACHE.dedupeCache.get(fn) || new Map();
 
     BETH_GLOBAL_RENDER_CACHE.dedupeCache.set(fn, cached);
@@ -26,13 +27,16 @@ export function cache<T extends (...args: any[]) => any>(
     for (let [keyArgs, cachedValue] of cached.entries()) {
       if (compareFn(args, keyArgs)) {
         if (cachedValue.type === "error") {
+          console.log("throwing cached error");
           throw cachedValue.error;
         } else {
+          console.log("returning cached value");
           return cachedValue.value;
         }
       }
     }
 
+    console.log("returning new value");
     try {
       const functionResult = fn(...args);
       cached.set(args, { type: "result", value: functionResult });

@@ -1,4 +1,5 @@
-import { expect, test } from "bun:test";
+import "../../shared/global";
+import { describe, expect, test } from "bun:test";
 import {
   persistedCache,
   revalidateTag,
@@ -375,4 +376,321 @@ test("complex object storage to json", async () => {
       e: [4, 5, 6],
     },
   });
+});
+
+describe("errors", () => {
+  setGlobalPersistCacheConfig({
+    log: true,
+  });
+
+  test("throw in inital callback", async () => {
+    // should set to neverSeeded
+    // will rerun the callback on the next call
+    // if throw again, still neverSeeded and will rerun
+    let count = 0;
+    const getCount = async () => {
+      count++;
+      if (count < 3) {
+        throw count.toString();
+      }
+      return count;
+    };
+    const cachedGetCount = persistedCache(getCount, "throw1");
+
+    const Component = async () => {
+      const data = await cachedGetCount();
+      return <p>number: {data}</p>;
+    };
+
+    const html = () =>
+      renderToString(() => (
+        <>
+          <Component />
+          <Component />
+        </>
+      ));
+
+    expect(html).toThrow("1");
+
+    const html2 = () =>
+      renderToString(() => (
+        <>
+          <Component />
+          <Component />
+        </>
+      ));
+
+    expect(html2).toThrow("2");
+
+    const html3 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
+  });
+
+  test("throw in revalidate was seeded (on reval error return stale: true)", async () => {
+    setGlobalPersistCacheConfig({
+      onRevalidateErrorReturnStale: true,
+    });
+    let count = 0;
+    const getCount = async () => {
+      count++;
+      if (count === 2) {
+        throw count.toString();
+      }
+      return count;
+    };
+    const cachedGetCount = persistedCache(getCount, "throw2", {
+      tags: ["tag1"],
+    });
+
+    // seeds ok
+
+    const Component = async () => {
+      const data = await cachedGetCount();
+      return <p>number: {data}</p>;
+    };
+
+    // hit cache
+
+    const html = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html).toBe("<p>number: 1</p><p>number: 1</p>");
+
+    await revalidateTag("tag1");
+    // ^^ THIS SHOULD LEAD TO THE CALLBACK RUNNING AGAIN AND THROWING
+    // but the old data is returned
+
+    const html2 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html2).toBe("<p>number: 1</p><p>number: 1</p>");
+
+    await revalidateTag("tag1");
+
+    const html3 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
+  });
+  test("throw in revalidate was seeded (on reval error return stale: false)", async () => {
+    setGlobalPersistCacheConfig({
+      onRevalidateErrorReturnStale: false,
+    });
+
+    let count = 0;
+    const getCount = async () => {
+      count++;
+      console.log("getCount", count);
+      if (count === 2) {
+        throw count.toString();
+      }
+      return count;
+    };
+    const cachedGetCount = persistedCache(getCount, "throw3", {
+      tags: ["tag9"],
+    });
+
+    const Component = async () => {
+      const data = await cachedGetCount();
+      return <p>number: {data}</p>;
+    };
+
+    const html = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html).toBe("<p>number: 1</p><p>number: 1</p>");
+
+    await revalidateTag("tag9");
+    // ^^ THIS SHOULD LEAD TO THE CALLBACK RUNNING AGAIN AND THROWING
+    // but bc of config option, the error is caught and stored
+    // to be rethrown on the next call
+
+    const html2 = () =>
+      renderToString(() => (
+        <>
+          <Component />
+          <Component />
+        </>
+      ));
+
+    expect(html2).toThrow("2");
+
+    await revalidateTag("tag9");
+
+    const html3 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
+  });
+  test("throw in revalidate was never seeded (on reval error return stale: false) 2", async () => {
+    setGlobalPersistCacheConfig({
+      onRevalidateErrorReturnStale: false,
+    });
+
+    let count = 0;
+    const getCount = async () => {
+      count++;
+      console.log("getCount", count);
+      if (count !== 3) {
+        throw count.toString();
+      }
+      return count;
+    };
+    // throws so neverSeeded
+    const cachedGetCount = persistedCache(getCount, "throw4", {
+      tags: ["tag2"],
+    });
+
+    const Component = async () => {
+      const data = await cachedGetCount();
+      return <p>number: {data}</p>;
+    };
+
+    // also throws so still neverSeeded
+    await revalidateTag("tag2");
+
+    await revalidateTag("tag2");
+    // this should fill the cache and clear the stored error
+
+    const html3 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
+  });
+  test("throw in revalidate was never seeded (on reval error return stale: true) zz", async () => {
+    setGlobalPersistCacheConfig({
+      onRevalidateErrorReturnStale: true,
+    });
+    let count = 0;
+    const getCount = async () => {
+      count++;
+      console.log("getCount", count);
+      if (count !== 4) {
+        throw count.toString();
+      }
+      return count;
+    };
+
+    console.log("first time");
+
+    // runs first time, throws so neverSeeded
+    const cachedGetCount = persistedCache(getCount, "throw5", {
+      tags: ["tag4"],
+    });
+
+    const Component = async () => {
+      const data = await cachedGetCount();
+      return <p>number: {data}</p>;
+    };
+    // console.log("---- second time");
+    // // runs second time, throws so neverSeeded
+    const html = renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    // expect(html).rejects.toBe("1");
+
+    // console.log("----- third time");
+    // runs third time, throws so neverSeeded
+    // await revalidateTag("tag4");
+    // ^^ THIS SHOULD LEAD TO THE CALLBACK RUNNING AGAIN AND THROWING
+    // which should keep it 'neverSeeded'
+
+    // runs fourth time, WORKS
+    console.log("forth time");
+    // const html2 = await renderToString(() => (
+    //   <>
+    //     <Component />
+    //     <Component />
+    //   </>
+    // ));
+
+    // expect(html2).toBe(`<p>number: 4</p><p>number: 4</p>`);
+  });
+  // test("throw in revalidate was never seeded (on reval error return stale: false)", async () => {
+  //   setGlobalPersistCacheConfig({
+  //     onRevalidateErrorReturnStale: false,
+  //   });
+  //   let count = 0;
+  //   const getCount = async () => {
+  //     count++;
+  //     console.log("getCount", count);
+  //     if (count !== 4) {
+  //       throw count.toString();
+  //     }
+  //     return count;
+  //   };
+  //   // runs first time, throws so neverSeeded
+  //   const cachedGetCount = persistedCache(getCount, "throw6", {
+  //     tags: ["tag5"],
+  //   });
+
+  //   const Component = async () => {
+  //     const data = await cachedGetCount();
+  //     return <p>number: {data}</p>;
+  //   };
+
+  //   // runs second time, throws so neverSeeded
+  //   const html = renderToString(() => (
+  //     <>
+  //       <Component />
+  //       <Component />
+  //     </>
+  //   ));
+
+  //   expect(html).rejects.toBe("2");
+
+  //   console.log("test");
+
+  //   // runs third time, throws so neverSeeded
+  //   await revalidateTag("tag5");
+  //   // ^^ THIS SHOULD LEAD TO THE CALLBACK RUNNING AGAIN AND THROWING
+  //   // which should keep it 'neverSeeded'
+  //   console.log("test2");
+
+  //   // runs fourth time, WORKS
+  //   const html2 = await renderToString(() => (
+  //     <>
+  //       <Component />
+  //       <Component />
+  //     </>
+  //   ));
+
+  //   console.log("test3");
+
+  //   expect(html2).toBe(`<p>number: 4</p><p>number: 4</p>`);
+  // });
 });

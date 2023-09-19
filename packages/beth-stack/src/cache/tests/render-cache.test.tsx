@@ -180,12 +180,10 @@ test("if a function throws, the same error is rethrown", async () => {
 });
 
 test("if a function throws, the same error is rethrown", async () => {
-  let first = true;
+  let count = 0;
   const throws = cache(() => {
-    if (first) {
-      first = false;
-      throw new Error("test");
-    }
+    count++;
+    throw new Error(count.toString());
   });
 
   const Component = async () => {
@@ -194,21 +192,18 @@ test("if a function throws, the same error is rethrown", async () => {
   };
 
   const html1 = () => <Component />;
-  expect(html1).toThrow("test");
+  expect(html1).toThrow("1");
   const html2 = () => <Component />;
-  expect(html2).toThrow("test");
+  expect(html2).toThrow("1");
   const html3 = () => <Component />;
-  expect(html3).toThrow("test");
+  expect(html3).toThrow("1");
 });
 
 test("if a promise rejects, the same rejected promise is returned", async () => {
-  let first = true;
+  let count = 0;
   const rejects = cache(async () => {
-    if (first) {
-      first = false;
-      throw new Error("test promise rejection");
-    }
-    return "success";
+    count++;
+    throw new Error(count.toString());
   });
 
   const Component = async () => {
@@ -217,11 +212,11 @@ test("if a promise rejects, the same rejected promise is returned", async () => 
   };
 
   const html1 = () => <Component />;
-  expect(html1).toThrow("test promise rejection");
+  expect(html1).toThrow("1");
 
   const html2 = () => <Component />;
-  expect(html2).toThrow("test promise rejection");
+  expect(html2).toThrow("1");
 
   const html3 = () => <Component />;
-  expect(html3).toThrow("test promise rejection");
+  expect(html3).toThrow("1");
 });

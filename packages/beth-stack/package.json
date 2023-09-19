@@ -24,7 +24,7 @@
   "devDependencies": {
     "bun-types": "latest",
     "csstype": "^3.1.2",
-    "elysia": "0.7.0-beta.0"
+    "elysia": "0.7.0-beta.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

@@ -7,7 +7,9 @@ export type CacheOptions = {
   persist?: "memory" | "json";
   revalidate?: number;
   tags?: string[];
-  seedImmediately?: boolean;
+  seedImmediately?: {
+    arguments?: any[];
+  } | boolean;
 };
 
 export type GlobalCacheConfig = {
@@ -15,6 +17,7 @@ export type GlobalCacheConfig = {
   defaultCacheOptions: Required<CacheOptions>;
   returnStaleWhileRevalidate: boolean;
   onRevalidateErrorReturnStale: boolean;
+  rethrowOnUnseededError: boolean;
 };
 
 export function persistedCache<T extends () => Promise<any>>(
@@ -97,6 +100,7 @@ export class BethPersistCache {
       },
       returnStaleWhileRevalidate: true,
       onRevalidateErrorReturnStale: true,
+      rethrowOnUnseededError: false,
     };
 
     if (existsSync("beth-cache.sqlite")) unlinkSync("beth-cache.sqlite");

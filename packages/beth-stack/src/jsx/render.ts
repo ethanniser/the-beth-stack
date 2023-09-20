@@ -48,9 +48,6 @@ export function renderToStream<T extends () => JSX.Element>(
           // Handle error appropriately
           BETH_GLOBAL_RENDER_CACHE.streamController?.error(error);
           BETH_GLOBAL_RENDER_CACHE.closeNow();
-        })
-        .finally(() => {
-          BETH_GLOBAL_RENDER_CACHE.reset();
         });
     },
   });

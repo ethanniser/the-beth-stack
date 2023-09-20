@@ -54,6 +54,7 @@ export class BethRenderCache {
   }
 
   public reset() {
+    console.log("resetting render cache");
     this.dedupeCache = new WeakMap();
     this.streamController = undefined;
     this.counter = 1;

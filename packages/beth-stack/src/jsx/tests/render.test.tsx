@@ -63,7 +63,7 @@ test("renderToString, doesn't resolve immediately", async () => {
 });
 
 test("renderToStream, resolves immediately", async () => {
-  const res = await renderToStreamResponse(() => (
+  const res = renderToStreamResponse(() => (
     <Suspense fallback={<p>loading...</p>}>
       <p>hi</p>
     </Suspense>
@@ -74,7 +74,8 @@ test("renderToStream, resolves immediately", async () => {
   expect(html).toBe(`<p>hi</p>`);
 });
 
-test("renderToStream, doesn't resolve immediately", async () => {
+test("renderToStream, doesn't resolve immediately yyy", async () => {
+  console.log("renderToStream, doesn't resolve immediately");
   const stream = renderToStream(() => (
     <Suspense fallback={<p>loading...</p>}>
       <Wait ms={100} />
@@ -111,7 +112,7 @@ test("renderToStream, doesn't resolve immediately", async () => {
 });
 
 test("renderTo*Response adds html headers", async () => {
-  const res = await renderToStreamResponse(() => (
+  const res = renderToStreamResponse(() => (
     <Suspense fallback={<p>loading...</p>}>
       <p>hi</p>
     </Suspense>

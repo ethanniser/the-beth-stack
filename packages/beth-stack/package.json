@@ -1,6 +1,6 @@
 {
   "name": "beth-stack",
-  "version": "0.0.18",
+  "version": "0.0.20",
   "type": "module",
   "bin": "./dist/cli/index.js",
   "exports": {
@@ -9,7 +9,8 @@
     "./jsx/register": "./src/jsx/register.ts",
     "./cache": "./src/cache/index.ts",
     "./elysia": "./src/elysia/index.ts",
-    "./dev": "./src/dev/index.ts"
+    "./dev": "./src/dev/index.ts",
+    "./turso": "./src/turso/index.ts"
   },
   "scripts": {
     "typecheck": "bunx --bun tsc",

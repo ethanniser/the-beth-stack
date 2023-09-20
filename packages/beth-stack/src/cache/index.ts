@@ -1,6 +1,6 @@
 export { cache } from "./render";
-export {
-  persistedCache,
-  revalidateTag,
-  setGlobalPersistCacheConfig,
-} from "./persist";
+// export {
+//   persistedCache,
+//   revalidateTag,
+//   setGlobalPersistCacheConfig,
+// } from "./persist";

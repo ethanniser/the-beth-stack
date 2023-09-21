@@ -233,3 +233,4 @@ export {
   renderToString,
   renderToStringResponse,
 } from "./render";
+export { defineContext, consumeContext } from "./context";

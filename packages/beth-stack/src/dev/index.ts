@@ -1,7 +1,6 @@
 export function liveReloadScript({
   debounceTime = 100,
-  url = "ws://localhost:3001/ws"
-
+  url = "ws://localhost:3001/ws",
 }: {
   url?: string;
   debounceTime?: number;
@@ -9,7 +8,7 @@ export function liveReloadScript({
   return `
         let reloadTimeout;
         (function () {
-          let socket = new WebSocket(${url});
+          let socket = new WebSocket(\"${url}\");
 
           socket.onopen = function(e) {
             console.log("connected")

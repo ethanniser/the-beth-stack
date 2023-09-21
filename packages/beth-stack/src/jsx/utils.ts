@@ -1,8 +1,17 @@
+;
+
 /**
  * FORK OF [kitajs/html](https://github.com/kitajs/html)
  */
 
 import type { Children } from ".";
+
+
+;
+
+
+
+
 
 const CAMEL_REGEX = /[a-z][A-Z]/;
 
@@ -289,4 +298,10 @@ export function contentsToString(
   }
 
   return result;
+}
+
+export function deepFlatten<T>(arr: (T | T[])[]): T[] {
+  return arr.reduce<T[]>((acc, val) => {
+    return Array.isArray(val) ? acc.concat(deepFlatten(val)) : acc.concat(val);
+  }, []);
 }

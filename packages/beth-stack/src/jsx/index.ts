@@ -6,7 +6,12 @@
 import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 import { ErrorBoundary } from "./error";
 import { Suspense } from "./suspense";
-import { attributesToString, contentsToString, isVoidElement } from "./utils";
+import {
+  attributesToString,
+  contentsToString,
+  deepFlatten,
+  isVoidElement,
+} from "./utils";
 
 type Children =
   | number
@@ -32,6 +37,8 @@ async function createElement(
   attributes: PropsWithChildren<unknown> | null,
   ...children: Children[]
 ): Promise<string> {
+  children = deepFlatten(children);
+
   const hasAnyPromiseChildren = children.reduce(
     (acc, child) => acc || child instanceof Promise,
     false,

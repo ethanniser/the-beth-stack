@@ -1,6 +1,6 @@
 {
   "name": "beth-stack",
-  "version": "0.0.20",
+  "version": "0.0.22",
   "type": "module",
   "bin": "./dist/cli/index.js",
   "exports": {

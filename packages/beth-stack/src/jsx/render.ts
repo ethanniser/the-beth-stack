@@ -5,7 +5,6 @@ export function renderToString<T extends () => JSX.Element>(
 ): JSX.Element {
   BETH_GLOBAL_RENDER_CACHE.reset();
   const resultPromise = lazyHtml();
-  resultPromise.finally(() => BETH_GLOBAL_RENDER_CACHE.reset());
   return resultPromise;
 }
 

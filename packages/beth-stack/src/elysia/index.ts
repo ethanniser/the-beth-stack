@@ -8,7 +8,7 @@ import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 type BethPluginOptions = GlobalCacheConfig;
 
 export function bethStack(options: Partial<BethPluginOptions> = {}) {
-  setGlobalPersistCacheConfig(options);
+  // setGlobalPersistCacheConfig(options);
 
   async function html<T extends () => JSX.Element>(
     lazyHtml: T,

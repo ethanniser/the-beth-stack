@@ -1,14 +1,15 @@
 export function liveReloadScript({
-  port = 3001,
   debounceTime = 100,
+  url = "ws://localhost:3001/ws"
+
 }: {
-  port?: number;
+  url?: string;
   debounceTime?: number;
 } = {}): string {
   return `
         let reloadTimeout;
         (function () {
-          let socket = new WebSocket("ws://localhost:${port}/ws");
+          let socket = new WebSocket(${url});
 
           socket.onopen = function(e) {
             console.log("connected")

@@ -121,7 +121,7 @@ describe("async components", () => {
 
     data++;
 
-    // render resets after finished
+    // render doesnt resets after finished
 
     const html2 = await (
       <>
@@ -130,30 +130,19 @@ describe("async components", () => {
       </>
     );
 
-    expect(html2).toBe(`<p>number: 3</p><p>number: 3</p>`);
-
-    // but if we dont use it again, it doesnt reset
-
-    const html3 = await (
-      <>
-        <Component />
-        <Component />
-      </>
-    );
-
-    expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
+    expect(html2).toBe(`<p>number: 1</p><p>number: 1</p>`);
 
     // lazy evaluation means we get the new data (because it doesnt go off until inside renderToString)
     const Test = () => <Component />;
 
-    const html4 = await renderToString(() => (
+    const html3 = await renderToString(() => (
       <>
         <Test />
         <Component />
       </>
     ));
 
-    expect(html4).toBe(`<p>number: 4</p><p>number: 4</p>`);
+    expect(html3).toBe(`<p>number: 3</p><p>number: 3</p>`);
   });
 });
 

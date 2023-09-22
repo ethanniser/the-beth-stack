@@ -95,7 +95,11 @@ class BethMemoryCache implements StoredCache {
 class BethJsonCache implements StoredCache {
   private db: Database;
   constructor() {
-    this.db = new Database("beth-cache.json");
+    if (existsSync("beth-cache.sqlite")) {
+      unlinkSync("beth-cache.sqlite");
+    }
+
+    this.db = new Database("beth-cache.sqlite");
     this.db.exec(
       "CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value TEXT NOT NULL)",
     );
@@ -165,6 +169,21 @@ export class BethPersistedCache {
   constructor() {}
 
   public setConfig(config: Partial<GlobalCacheConfig>): void {}
+
+  public clearAllIntervals(): void {
+    this.intervals.forEach((interval) => clearInterval(interval));
+  }
+  public purgeAllCachedData(): void {
+    this.primaryMap = new Map();
+    this.erroredMap = new Map();
+    this.inMemoryDataCache = new BethMemoryCache();
+    this.jsonDataCache = new BethJsonCache();
+    this.primaryMap.forEach((fnData, key) => {
+      fnData.argsMap.forEach((fnData, key) => {
+        fnData.status = "unseeded";
+      });
+    });
+  }
 
   public initializeEntry(
     callBack: () => Promise<any>,

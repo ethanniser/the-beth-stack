@@ -10,6 +10,8 @@ import { renderToString } from "../../jsx/render";
 
 beforeEach(() => {
   setGlobalPersistCacheConfig(null);
+  BETH_GLOBAL_PERSISTED_CACHE.clearAllIntervals();
+  BETH_GLOBAL_PERSISTED_CACHE.purgeAllCachedData();
 });
 
 let cacheKey = 0;
@@ -334,11 +336,252 @@ describe("interval revalidation", () => {
 
 // TODO
 describe("manual revalidation", () => {
-  test("by default no tags are applied", async () => {});
-  test("custom tags can be applied", async () => {});
-  test("tags can be revalidated", async () => {});
-  test("tags stay independant", async () => {});
-  test("two entries with shared tag both revalidate", async () => {});
+  test("by default no tags are applied", async () => {
+    let count = 0;
+    let getCount = async () => ++count;
+    let cachedGetCount = persistedCache(getCount, getCacheKey());
+
+    expect(count).toBe(1);
+
+    const Component = async () => {
+      const count = await cachedGetCount();
+      return <div>{count}</div>;
+    };
+
+    const html = await renderToString(() => (
+      <div>
+        <Component />
+        <Component />
+        <Component />
+      </div>
+    ));
+
+    expect(html).toBe(
+      `
+      <div>
+        <div>1</div>
+        <div>1</div>
+        <div>1</div>
+      </div>
+      `.replace(/\s+/g, ""),
+    );
+
+    await revalidateTag("tag");
+
+    const html2 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html2).toBe(`<div>1</div><div>1</div>`);
+  });
+  test("tags can be revalidated", async () => {
+    let count = 0;
+    let getCount = async () => ++count;
+    let cachedGetCount = persistedCache(getCount, getCacheKey(), {
+      tags: ["tag"],
+    });
+
+    expect(count).toBe(1);
+
+    const Component = async () => {
+      const count = await cachedGetCount();
+      return <div>{count}</div>;
+    };
+
+    const html = await renderToString(() => (
+      <div>
+        <Component />
+        <Component />
+        <Component />
+      </div>
+    ));
+
+    expect(html).toBe(
+      `
+      <div>
+        <div>1</div>
+        <div>1</div>
+        <div>1</div>
+      </div>
+      `.replace(/\s+/g, ""),
+    );
+
+    await revalidateTag("tag");
+
+    const html2 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html2).toBe(`<div>2</div><div>2</div>`);
+  });
+  test("custom tags can be set by default", async () => {
+    setGlobalPersistCacheConfig({
+      defaultCacheOptions: {
+        tags: ["tag"],
+      },
+    });
+
+    let count = 0;
+    let getCount = async () => ++count;
+    let cachedGetCount = persistedCache(getCount, getCacheKey());
+
+    expect(count).toBe(1);
+
+    const Component = async () => {
+      const count = await cachedGetCount();
+      return <div>{count}</div>;
+    };
+
+    const html = await renderToString(() => (
+      <div>
+        <Component />
+        <Component />
+        <Component />
+      </div>
+    ));
+
+    expect(html).toBe(
+      `
+      <div>
+        <div>1</div>
+        <div>1</div>
+        <div>1</div>
+      </div>
+      `.replace(/\s+/g, ""),
+    );
+
+    await revalidateTag("tag");
+
+    const html2 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html2).toBe(`<div>2</div><div>2</div>`);
+  });
+  test("tags stay independant", async () => {
+    let count1 = 0;
+    let getCount1 = async () => ++count1;
+    let cachedGetCount1 = persistedCache(getCount1, getCacheKey(), {
+      tags: ["tag1"],
+    });
+
+    let count2 = 0;
+    let getCount2 = async () => ++count2;
+    let cachedGetCount2 = persistedCache(getCount2, getCacheKey(), {
+      tags: ["tag2"],
+    });
+
+    const Component = async () => {
+      const count1 = await cachedGetCount1();
+      const count2 = await cachedGetCount2();
+      return (
+        <div>
+          {count1} - {count2}
+        </div>
+      );
+    };
+
+    const html = await renderToString(() => (
+      <div>
+        <Component />
+        <Component />
+        <Component />
+      </div>
+    ));
+
+    expect(html).toBe(
+      `
+      <div>
+        <div>1 - 1</div>
+        <div>1 - 1</div>
+        <div>1 - 1</div>
+      </div>
+      `.replace(/\s+/g, ""),
+    );
+
+    await revalidateTag("tag1");
+
+    const html2 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html2).toBe(`<div>2 - 1</div><div>2 - 1</div>`);
+
+    await revalidateTag("tag2");
+
+    const html3 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html3).toBe(`<div>2 - 2</div><div>2 - 2</div>`);
+  });
+  test("two entries with shared tag both revalidate", async () => {
+    let count1 = 0;
+    let getCount1 = async () => ++count1;
+    let cachedGetCount1 = persistedCache(getCount1, getCacheKey(), {
+      tags: ["tag"],
+    });
+
+    let count2 = 0;
+    let getCount2 = async () => ++count2;
+    let cachedGetCount2 = persistedCache(getCount2, getCacheKey(), {
+      tags: ["tag"],
+    });
+
+    const Component = async () => {
+      const count1 = await cachedGetCount1();
+      const count2 = await cachedGetCount2();
+      return (
+        <div>
+          {count1} - {count2}
+        </div>
+      );
+    };
+
+    const html = await renderToString(() => (
+      <div>
+        <Component />
+        <Component />
+        <Component />
+      </div>
+    ));
+
+    expect(html).toBe(
+      `
+      <div>
+        <div>1 - 1</div>
+        <div>1 - 1</div>
+        <div>1 - 1</div>
+      </div>
+      `.replace(/\s+/g, ""),
+    );
+
+    await revalidateTag("tag");
+
+    const html2 = await renderToString(() => (
+      <>
+        <Component />
+        <Component />
+      </>
+    ));
+
+    expect(html2).toBe(`<div>2 - 2</div><div>2 - 2</div>`);
+  });
   test("revalidateTag returns promise that resolves when revalidation is complete", async () => {});
 });
 

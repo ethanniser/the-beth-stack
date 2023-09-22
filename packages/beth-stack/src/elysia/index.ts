@@ -1,7 +1,7 @@
 import "../jsx/register";
 import { type Elysia } from "elysia";
 import { setGlobalPersistCacheConfig } from "../cache";
-import { GlobalCacheConfig } from "../cache/persist";
+import { GlobalCacheConfig } from "../cache/old-persist";
 import { renderToStreamResponse, renderToStringResponse } from "../jsx";
 import { BETH_GLOBAL_RENDER_CACHE } from "../shared/global";
 

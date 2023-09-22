@@ -1,4 +1,4 @@
-import { BethPersistCache } from "../cache/persist";
+import { BethPersistCache } from "../cache/old-persist";
 import { BethRenderCache } from "../cache/render";
 
 declare global {

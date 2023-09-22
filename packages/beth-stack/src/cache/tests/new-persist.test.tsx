@@ -4,7 +4,7 @@ import {
   persistedCache,
   revalidateTag,
   setGlobalPersistCacheConfig,
-} from "../persist copy";
+} from "../new-persist";
 import "../../jsx/register";
 import { renderToString } from "../../jsx/render";
 

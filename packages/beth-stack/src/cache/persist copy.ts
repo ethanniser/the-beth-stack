@@ -7,6 +7,10 @@ type Brand<K, T> = K & { __brand: T };
 type FunctionKey = Brand<string, "FunctionKey">;
 type ArgKey = Brand<string, "ArgKey">;
 
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
 export type CacheOptions = {
   persist?: "memory" | "json";
   revalidate?: number;
@@ -22,11 +26,32 @@ export type CacheOptions = {
 };
 
 export type GlobalCacheConfig = {
-  log?: "debug" | "major" | "none";
+  log: "debug" | "major" | "none";
   defaultCacheOptions: Required<CacheOptions>;
-  returnStaleWhileRevalidate: boolean;
-  onRevalidateErrorReturnStale: boolean;
-  rethrowOnUnseededError: boolean;
+  errorHandling: Required<ErrorHandlingConfig>;
+  returnStaleWhileRevalidating: boolean;
+};
+
+type ErrorHandlingConfig = {
+  duringRevalidation?: "return-stale" | "rethrow" | "rerun on next call";
+  duringRevalidationWhileUnseeded?: "rerun on next call" | "rethrow";
+  duringImmediateSeed?: "rerun on next call" | "rethrow";
+};
+
+const startingConfig: GlobalCacheConfig = {
+  log: "major",
+  defaultCacheOptions: {
+    persist: "json",
+    revalidate: Infinity,
+    tags: [],
+    seedImmediately: true,
+  },
+  errorHandling: {
+    duringRevalidation: "return-stale",
+    duringRevalidationWhileUnseeded: "rerun on next call",
+    duringImmediateSeed: "rerun on next call",
+  },
+  returnStaleWhileRevalidating: true,
 };
 
 export declare function persistedCache<T extends () => Promise<any>>(
@@ -38,8 +63,9 @@ export declare function persistedCache<T extends () => Promise<any>>(
 // returns promise that resolves when all data with the tag have completed revalidation
 export declare function revalidateTag(tag: string): Promise<void>;
 
+// if null, will use default config
 export declare function setGlobalPersistCacheConfig(
-  config: Partial<GlobalCacheConfig>,
+  config: DeepPartial<GlobalCacheConfig> | null,
 ): void;
 
 type StoredCache = {
@@ -53,7 +79,14 @@ class BethMemoryCache implements StoredCache {
     this.cache = new Map();
   }
   public get(key: string) {
-    return this.cache.get(key);
+    const result = this.cache.get(key);
+    if (result) {
+      return result;
+    } else {
+      throw new Error(
+        `No entry found in memory cache when one was expected: ${key}`,
+      );
+    }
   }
   public set(key: string, value: any) {
     this.cache.set(key, value);
@@ -64,37 +97,44 @@ class BethJsonCache implements StoredCache {
   constructor() {
     this.db = new Database("beth-cache.json");
     this.db.exec(
-      "CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value TEXT)",
+      "CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value TEXT NOT NULL)",
     );
   }
   public get(key: string) {
-    const result = this.db.get("SELECT value FROM cache WHERE key = ?", key);
+    const result = this.db
+      .query("SELECT value FROM cache WHERE key = ?")
+      .get(key) as { value: string } | undefined;
     if (result) {
       return JSON.parse(result.value);
     } else {
-      throw new CacheNotFound(
+      throw new Error(
         `No entry found in json cache when one was expected: ${key}`,
-        "json",
       );
     }
   }
   public set(key: string, value: any) {
-    this.db.run(
-      "INSERT OR REPLACE INTO cache (key, value) VALUES (?, ?)",
-      key,
-      JSON.stringify(value),
-    );
+    this.db
+      .query(
+        `
+        INSERT INTO cache (key, value)
+        VALUES (?, ?)
+        ON CONFLICT (key) DO UPDATE SET value = excluded.value;
+        `,
+      )
+      .run(key, JSON.stringify(value));
   }
 }
 
 class InvariantError extends Error {
   constructor(message: string) {
-    super(`${message} - THIS SHOULD NEVER HAPPEN - PLEASE OPEN AN ISSUE`);
+    super(
+      `${message} - THIS SHOULD NEVER HAPPEN - PLEASE OPEN AN ISSUE ethanniser/beth-stack`,
+    );
   }
 }
 
 export class BethPersistedCache {
-  private config: GlobalCacheConfig;
+  private config: GlobalCacheConfig = startingConfig;
   private primaryMap: Map<
     FunctionKey,
     {
@@ -114,13 +154,13 @@ export class BethPersistedCache {
         }
       >;
     }
-  >;
-  private pendingMap: Map<ArgKey, Promise<any>>;
-  private erroredMap: Map<ArgKey, any>;
-  private inMemoryDataCache: BethMemoryCache;
-  private jsonDataCache: BethJsonCache;
-  private intervals: Set<Timer>;
-  private keys: Set<string>;
+  > = new Map();
+  private pendingMap: Map<ArgKey, Promise<any>> = new Map();
+  private erroredMap: Map<ArgKey, any> = new Map();
+  private inMemoryDataCache: BethMemoryCache = new BethMemoryCache();
+  private jsonDataCache: BethJsonCache = new BethJsonCache();
+  private intervals: Set<Timer> = new Set();
+  private keys: Set<string> = new Set();
 
   constructor() {}
 

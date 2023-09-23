@@ -1,3 +1,23 @@
+export type DatabaseAPI = {
+  create({
+    name,
+    location,
+    image,
+    group,
+  }: {
+    name: string;
+    location?: string;
+    image?: "latest" | "canary";
+    group?: string;
+    seed?: {
+      type: "database";
+      name: string;
+    };
+  }): Promise<{
+    database: LogicalDatabase;
+  }>;
+};
+
 export type GroupAPI = {
   getAll(): Promise<{
     groups: Group[];

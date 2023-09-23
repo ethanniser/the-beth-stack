@@ -1,5 +1,6 @@
 import {
   AuthenticationAPI,
+  DatabaseAPI,
   DatabaseInstanceAPI,
   GroupAPI,
   LocationAPI,
@@ -24,6 +25,29 @@ export class TursoClient {
     }
     return res.json();
   }
+
+  public databases: DatabaseAPI = {
+    create: ({
+      name,
+      location,
+      image,
+      group,
+    }: {
+      name: string;
+      location: string;
+      image?: "latest" | "canary";
+      group?: string;
+    }) =>
+      this.fetch("/v1/databases", {
+        method: "POST",
+        body: JSON.stringify({
+          name,
+          location,
+          image,
+          group,
+        }),
+      }),
+  };
 
   public authentication: AuthenticationAPI = {
     listTokens: () => this.fetch("/v1/auth/api-tokens"),

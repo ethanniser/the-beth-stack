@@ -108,6 +108,9 @@ export class TursoClient {
       }
       return this.fetch(
         `/v1/organizations/${org_slug}/databases/${db_name}/auth/tokens?${params.toString()}`,
+        {
+          method: "POST",
+        },
       );
     },
     invalidateAllAuthTokens: (org_slug: string, db_name: string) =>

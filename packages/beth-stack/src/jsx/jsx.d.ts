@@ -213,6 +213,7 @@ declare namespace JSX {
     height?: undefined | string;
     list?: undefined | string;
     max?: undefined | string;
+    minlength?: undefined | string;
     maxlength?: undefined | string;
     method?: undefined | string;
     min?: undefined | string;

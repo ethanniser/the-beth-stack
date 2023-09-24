@@ -27,17 +27,7 @@ export class TursoClient {
   }
 
   public databases: DatabaseAPI = {
-    create: ({
-      name,
-      location,
-      image,
-      group,
-    }: {
-      name: string;
-      location: string;
-      image?: "latest" | "canary";
-      group?: string;
-    }) =>
+    create: ({ name, location, image, group }) =>
       this.fetch("/v1/databases", {
         method: "POST",
         body: JSON.stringify({

@@ -27,3 +27,6 @@ Want to discuss more? Join Ethan's Discord: https://discord.gg/Z3yUtMfkwa
 - TODO
 
 # Contributions Welcome
+
+_looking for the repo from the first video?_
+[its on the 'PREVIOUS_REPO_ARCHIVE' branch](https://github.com/ethanniser/the-beth-stack/tree/PREVIOUS_REPO_ARCHIVE)

@@ -8,6 +8,16 @@ Also: [Lucia](https://lucia-auth.com/), [UnoCSS](https://unocss.dev/), [drizzle]
 
 Want to discuss more? Join Ethan's Discord: https://discord.gg/Z3yUtMfkwa
 
+---
+
+_Looking for the repo from the first video?_ \
+[its on the 'PREVIOUS_REPO_ARCHIVE' branch](https://github.com/ethanniser/the-beth-stack/tree/PREVIOUS_REPO_ARCHIVE)
+
+_Or the repo for the full tutorial app?_ \
+[its in a different repo](https://github.com/ethanniser/beth-b2b-saas)
+
+---
+
 # This Repo:
 
 ## `packages/beth-stack`: Contains the `beth-stack` npm package
@@ -27,6 +37,3 @@ Want to discuss more? Join Ethan's Discord: https://discord.gg/Z3yUtMfkwa
 - TODO
 
 # Contributions Welcome
-
-_looking for the repo from the first video?_
-[its on the 'PREVIOUS_REPO_ARCHIVE' branch](https://github.com/ethanniser/the-beth-stack/tree/PREVIOUS_REPO_ARCHIVE)

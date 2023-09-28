@@ -10,10 +10,10 @@ Want to discuss more? Join Ethan's Discord: https://discord.gg/Z3yUtMfkwa
 
 ---
 
-_Looking for the repo from the first video?_ \
+_Looking for the code from the first video (todo app)?_ \
 [its on the 'PREVIOUS_REPO_ARCHIVE' branch](https://github.com/ethanniser/the-beth-stack/tree/PREVIOUS_REPO_ARCHIVE)
 
-_Or the repo for the full tutorial app?_ \
+_Or the code for the full tutorial (b2b ticket app)?_ \
 [its in a different repo](https://github.com/ethanniser/beth-b2b-saas)
 
 ---

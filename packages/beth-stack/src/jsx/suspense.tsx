@@ -22,6 +22,10 @@ export const swapScript = `
   </script>
 `;
 
+function isNotFulfilled(child: Promise<unknown>) {
+  return Bun.peek.status(child) !== "fulfilled";
+}
+
 export async function Suspense({
   fallback,
   children,
@@ -32,10 +36,7 @@ export async function Suspense({
   if (!Array.isArray(children))
     throw new Error("children isnt array (shouldnt be possible)");
 
-  const hasAnyUnresolvedPromiseChildren = children.reduce(
-    (acc, child) => acc || Bun.peek.status(child) !== "fulfilled",
-    false,
-  );
+  const hasAnyUnresolvedPromiseChildren = children.some(isNotFulfilled);
 
   if (!hasAnyUnresolvedPromiseChildren) {
     return children.join("");

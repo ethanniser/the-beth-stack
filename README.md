@@ -32,8 +32,10 @@ _Or the code for the full tutorial (b2b ticket app)?_ \
 - Scaffolds a new BETH app
 - very much WIP
 
-## `www`: Contains the documentation website
+## `https://beth-stack-docs.vercel.app/`: Contains the documentation website
 
-- TODO
+- [Beth Stack Docs](https://beth-stack-docs.vercel.app/)
+- WIP
+- Contributions welcome [Github Repo](https://github.com/jd4rider/beth-stack-docs)
 
 # Contributions Welcome

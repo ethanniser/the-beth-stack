@@ -1,4 +1,4 @@
-import { InferModel } from "drizzle-orm";
+import { InferSelectModel } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const todos = sqliteTable("todos", {
@@ -7,4 +7,4 @@ export const todos = sqliteTable("todos", {
   completed: integer("completed", { mode: "boolean" }).notNull().default(false),
 });
 
-export type Todo = InferModel<typeof todos>;
+export type Todo = InferSelectModel<typeof todos>;

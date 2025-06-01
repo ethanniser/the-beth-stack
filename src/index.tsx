@@ -33,7 +33,7 @@ const app = new Elysia()
         .get();
       const newTodo = await db
         .update(todos)
-        .set({ completed: !oldTodo.completed })
+        .set({ completed: !oldTodo?.completed })
         .where(eq(todos.id, params.id))
         .returning()
         .get();
